@@ -1,0 +1,5 @@
+*.ipynb
+*.csv
+csv_files
+wandb
+results
