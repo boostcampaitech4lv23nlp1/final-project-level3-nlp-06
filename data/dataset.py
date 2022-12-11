@@ -2,6 +2,7 @@ from torch.utils.data import Dataset
 import torch
 from transformers import AutoTokenizer
 import pandas as pd
+from sklearn.preprocessing import MultiLabelBinarizer
 
 
 class BASE_Dataset(Dataset):
@@ -61,3 +62,19 @@ class Apeach_Dataset(BASE_Dataset):
         return text, label
         
     
+class kmhas_Dataset(BASE_Dataset):
+    def __init__(self, csv_path, tokenizer_name):
+        super(kmhas_Dataset, self).__init__(csv_path, tokenizer_name)
+        self.text, self.label = self.preprocess_dataframe(self.df)
+        self.num_labels = 9
+        
+        self.enc = MultiLabelBinarizer()
+        
+        
+    def preprocess_dataframe(self, df):
+        text = list(df["text"])
+        label = self.enc.fit_transform(df['label'])
+        
+        return text, label
+        
+        
