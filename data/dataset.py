@@ -65,16 +65,28 @@ class Apeach_Dataset(BASE_Dataset):
 class kmhas_Dataset(BASE_Dataset):
     def __init__(self, csv_path, tokenizer_name):
         super(kmhas_Dataset, self).__init__(csv_path, tokenizer_name)
+        self.enc = MultiLabelBinarizer()
         self.text, self.label = self.preprocess_dataframe(self.df)
         self.num_labels = 9
         
-        self.enc = MultiLabelBinarizer()
-        
-        
     def preprocess_dataframe(self, df):
         text = list(df["text"])
-        label = self.enc.fit_transform(df['label'])
+        label = [eval(label.replace(" ", ", ")) for label in df['label']]
+        label = self.enc.fit_transform(label)
         
         return text, label
         
+    def __getitem__(self, idx):
+        encoded_text = self.tokenizer.encode_plus(
+            text=self.text[idx],
+            return_tensors='pt',
+            max_length=256,
+            truncation=True,
+            padding="max_length",
+        )
+        encoded_text = {k: v.squeeze() for k, v in encoded_text.items()}
+        label = self.label[idx]
+        encoded_text["label"] = torch.Tensor(label)
         
+        return encoded_text
+    
