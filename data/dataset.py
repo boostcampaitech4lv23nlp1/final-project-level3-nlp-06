@@ -85,8 +85,7 @@ class kmhas_Dataset(BASE_Dataset):
             padding="max_length",
         )
         encoded_text = {k: v.squeeze() for k, v in encoded_text.items()}
-        label = self.label[idx]
-        encoded_text["label"] = torch.Tensor(label)
+        encoded_text["label"] = self.label[idx]
         
         return encoded_text
     
