@@ -23,7 +23,7 @@ eval_step = 300
 
 
 tokenizer = AutoTokenizer.from_pretrained(model_name)
-model = AutoModelForSequenceClassification.from_pretrained(model_name, num_labels=num_labels, problem_type="multi-label-classification")
+model = AutoModelForSequenceClassification.from_pretrained(model_name, num_labels=num_labels, problem_type="multi_label_classification")
 
 # set device
 device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
@@ -54,7 +54,7 @@ def compute_metrics(pred):
     sigmoid = torch.nn.Sigmoid()
     
     labels = pred.label_ids
-    probs = sigmoid(pred.predictions)
+    probs = sigmoid(torch.tensor(pred.predictions))
     preds = torch.zeros(probs.shape)
     preds[torch.where(probs >= 0.5)] = 1
     
@@ -67,7 +67,7 @@ def compute_metrics(pred):
         "auprc": auprc,
         "accuracy": acc
     }
-    
+
 
 wandb.init(project=wandb_project, entity=wandb_entity, name=wandb_name)
 
