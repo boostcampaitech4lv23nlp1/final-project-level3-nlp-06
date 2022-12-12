@@ -1,6 +1,6 @@
 import torch
 from transformers import AutoModelForSequenceClassification, TrainingArguments, Trainer
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import accuracy_score, roc_auc_score
 import wandb
 import yaml
 
@@ -9,25 +9,27 @@ from utils import calc_f1_score, Auprc
 
 
 def main(config):
-    model = AutoModelForSequenceClassification.from_pretrained(config["model_name"], num_labels=config["num_labels"])
+    model = AutoModelForSequenceClassification.from_pretrained(config["model_name"], num_labels=config["num_labels"], problem_type="multi_label_classification")
 
     # set device
     device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
     model.to(device)
 
     # Dataset
-    train_dataset = Apeach_Dataset(config["train_dir"], config["model_name"])
-    valid_dataset = Apeach_Dataset(config["valid_dir"], config["model_name"])
+    train_dataset = kmhas_Dataset(config["train_dir"], config["model_name"])
+    valid_dataset = kmhas_Dataset(config["valid_dir"], config["model_name"])
 
 
     def compute_metrics(pred):
+        sigmoid = torch.nn.Sigmoid()
+        
         labels = pred.label_ids
-        preds = pred.predictions.argmax(-1)
-        probs = pred.predictions
+        probs = sigmoid(pred.predictions)
+        preds = torch.zeros(probs.shape)
+        preds[torch.where(probs >= 0.5)] = 1
         
         f1 = calc_f1_score(preds, labels)
-        auprc_obj = Auprc(train_dataset.num_labels)
-        auprc = auprc_obj.calc(probs, labels)
+        auprc = roc_auc_score(labels, preds, average="macro")
         acc = accuracy_score(labels, preds)
         
         return {
@@ -69,5 +71,5 @@ def main(config):
 
 if __name__ == "__main__":
     with open("config.yaml", "r") as f:
-        config = yaml.load(f)
+        config = yaml.load(f, Loader=yaml.Loader)
     main(config)
