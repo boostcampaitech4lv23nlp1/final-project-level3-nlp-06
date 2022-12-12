@@ -11,11 +11,9 @@ from utils import calc_f1_score, Auprc
 def main(config):
     model = AutoModelForSequenceClassification.from_pretrained(config["model_name"], num_labels=config["num_labels"])
 
-    # set device
     device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
     model.to(device)
 
-    # Dataset
     train_dataset = Apeach_Dataset(config["train_dir"], config["model_name"])
     valid_dataset = Apeach_Dataset(config["valid_dir"], config["model_name"])
 
