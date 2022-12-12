@@ -11,14 +11,11 @@ from utils import calc_f1_score, Auprc
 def main(config):
     model = AutoModelForSequenceClassification.from_pretrained(config["model_name"], num_labels=config["num_labels"], problem_type="multi_label_classification")
 
-    # set device
     device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
     model.to(device)
 
-    # Dataset
     train_dataset = kmhas_Dataset(config["train_dir"], config["model_name"])
     valid_dataset = kmhas_Dataset(config["valid_dir"], config["model_name"])
-
 
     def compute_metrics(pred):
         sigmoid = torch.nn.Sigmoid()
