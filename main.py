@@ -2,22 +2,22 @@ import torch
 from transformers import AutoModelForSequenceClassification, TrainingArguments, Trainer
 from sklearn.metrics import accuracy_score
 import wandb
-import json
+import yaml
 
 from data import Apeach_Dataset
 from utils import calc_f1_score, Auprc
 
 
 def main(config):
-    model = AutoModelForSequenceClassification.from_pretrained(config.model_name, num_labels=config.num_labels)
+    model = AutoModelForSequenceClassification.from_pretrained(config["model_name"], num_labels=config["num_labels"])
 
     # set device
     device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
     model.to(device)
 
     # Dataset
-    train_dataset = Apeach_Dataset(config.train_dir, config.model_name)
-    valid_dataset = Apeach_Dataset(config.valid_dir, config.model_name)
+    train_dataset = Apeach_Dataset(config["train_dir"], config["model_name"])
+    valid_dataset = Apeach_Dataset(config["valid_dir"], config["model_name"])
 
 
     def compute_metrics(pred):
@@ -37,22 +37,22 @@ def main(config):
         }
         
 
-    wandb.init(project=config.wandb_project, entity=config.wandb_entity, name=config.wandb_name)
+    wandb.init(project=config["wandb_project"], entity=config["wandb_entity"], name=config["wandb_name"])
 
     training_args = TrainingArguments(
         output_dir="./results",
         save_total_limit=2,
-        save_steps=config.save_step,
-        num_train_epochs=config.epochs,
-        learning_rate=config.lr,
-        per_device_train_batch_size=config.batch_size,
-        per_device_eval_batch_size=config.batch_size,
+        save_steps=config["save_step"],
+        num_train_epochs=config["epochs"],
+        learning_rate=config["lr"],
+        per_device_train_batch_size=config["batch_size"],
+        per_device_eval_batch_size=config["batch_size"],
         warmup_ratio=0.5,
         weight_decay=0.01,
         logging_dir="./logs",
         logging_steps=100,
         evaluation_strategy='steps',
-        eval_steps=config.eval_step,
+        eval_steps=config["eval_step"],
         load_best_model_at_end=True,
         report_to='wandb',
     )
@@ -68,6 +68,6 @@ def main(config):
     trainer.train()
 
 if __name__ == "__main__":
-    with open("config.json", "r") as f:
-        config = json.load(f)
+    with open("config.yaml", "r") as f:
+        config = yaml.load(f)
     main(config)
