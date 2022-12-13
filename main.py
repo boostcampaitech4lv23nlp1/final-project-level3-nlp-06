@@ -32,7 +32,7 @@ def main(config):
         
         return {
             "micro f1 score": f1,
-            "auprc": auprc,
+            "auprc": auprc*100,
             "accuracy": acc
         }
         
