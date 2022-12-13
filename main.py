@@ -74,3 +74,4 @@ if __name__ == "__main__":
     with open(args.conf, "r") as f:
         config = yaml.load(f, Loader=yaml.Loader)
     main(config)
+    

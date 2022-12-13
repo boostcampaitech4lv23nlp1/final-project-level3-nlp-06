@@ -14,8 +14,7 @@ class BASE_Dataset(Dataset):
         self.label = None
         self.label2num = None
         
-    # preprocess_dataframe에서 csv 파일에서 라벨과 문장을 갖고 오는 코드를 작성해야 한다.
-    # 아래 Apeach_dataset 참고.
+        
     def preprocess_dataframe(self):
         raise NotImplementedError
         
@@ -46,7 +45,7 @@ class BASE_Dataset(Dataset):
     def __len__(self):
         return len(self.text)
     
-# 데이터셋마다 형식이 다를테니 아래와 같이 BASE_Dataset 상속 받아서 Dataset 클래스 작성.
+
 class Apeach_Dataset(BASE_Dataset):
     def __init__(self, csv_path, tokenizer_name):
         super(Apeach_Dataset, self).__init__(csv_path, tokenizer_name)
