@@ -55,7 +55,7 @@ def main(config):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Hate Speech Classification')
-    parser.add_argument("--conf", type=str, default="config.yaml", help="config file path(.yaml)")
+    parser.add_argument("--conf", type=str, default="inference_config.yaml", help="config file path(.yaml)")
     args = parser.parse_args()
     with open(args.conf, "r") as f:
         config = yaml.load(f, Loader=yaml.Loader)
