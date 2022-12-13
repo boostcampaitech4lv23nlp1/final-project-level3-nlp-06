@@ -6,41 +6,37 @@ import yaml
 import argparse
 
 from data import Apeach_Dataset, kmhas_Dataset
-from utils import calc_f1_score, Auprc
+from utils import Compute_metrics
 
+
+Dataset = {"APEACH": Apeach_Dataset, "kmhas": kmhas_Dataset}
 
 def main(config):
-    model = AutoModelForSequenceClassification.from_pretrained(config["model_name"], num_labels=config["num_labels"], problem_type="multi_label_classification")
+    if config["multi_label"]:
+        model = AutoModelForSequenceClassification.from_pretrained(
+            config["model_name"], 
+            num_labels=config["num_labels"], 
+            problem_type="multi_label_classification"
+        )
+    else:
+        model = AutoModelForSequenceClassification.from_pretrained(
+            config["model_name"], 
+            num_labels=config["num_labels"]
+        )
 
     device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
     model.to(device)
 
-    train_dataset = kmhas_Dataset(config["train_dir"], config["model_name"])
-    valid_dataset = kmhas_Dataset(config["valid_dir"], config["model_name"])
-
-    def compute_metrics(pred):
-        sigmoid = torch.nn.Sigmoid()
-        
-        labels = pred.label_ids
-        probs = sigmoid(pred.predictions)
-        preds = torch.zeros(probs.shape)
-        preds[torch.where(probs >= 0.5)] = 1
-        
-        f1 = calc_f1_score(preds, labels)
-        auprc = roc_auc_score(labels, preds, average="macro")
-        acc = accuracy_score(labels, preds)
-        
-        return {
-            "micro f1 score": f1,
-            "auprc": auprc*100,
-            "accuracy": acc
-        }
-        
+    train_dataset = Dataset[config["dataset"]](config["train_dir"], config["model_name"])
+    valid_dataset = Dataset[config["dataset"]](config["valid_dir"], config["model_name"])
+    
+    CM = Compute_metrics(multi_label=config["multi_label"], num_labels=config["num_labels"])
+    compute_metrics = CM.compute_metrics
 
     wandb.init(project=config["wandb_project"], entity=config["wandb_entity"], name=config["wandb_name"])
 
     training_args = TrainingArguments(
-        output_dir="./results",
+        output_dir=config["checkpoint_dir"],
         save_total_limit=2,
         save_steps=config["save_step"],
         num_train_epochs=config["epochs"],
