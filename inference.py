@@ -18,14 +18,14 @@ def main(config):
         )
     else:
         model = AutoModelForSequenceClassification.from_pretrained(
-            config["model_name"], 
+            config["checkpoint_dir"], 
             num_labels=config["num_labels"]
         )
 
     device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
     model.to(device)
 
-    valid_dataset = kmhas_Dataset(config["valid_dir"], config["model_name"])
+    valid_dataset = Dataset[config["dataset"]](config["valid_dir"], config["model_name"])
 
     CM = Compute_metrics(multi_label=config["multi_label"], num_labels=config["num_labels"])
     compute_metrics = CM.compute_metrics
@@ -36,6 +36,7 @@ def main(config):
     )
 
     result = trainer.predict(valid_dataset)
+    print(result.metrics)
     
     preds = get_prediction(result, config["label_map_dir"], config["multi_label"])
     
