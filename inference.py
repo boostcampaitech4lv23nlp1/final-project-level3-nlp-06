@@ -1,40 +1,34 @@
 import torch
 from transformers import AutoModelForSequenceClassification, TrainingArguments, Trainer
-from sklearn.metrics import accuracy_score, roc_auc_score
 import yaml
 import argparse
-import numpy as np
-import pickle
 
 from data import Apeach_Dataset, kmhas_Dataset
-from utils import calc_f1_score, Auprc
+from utils import Compute_metrics, get_prediction
 
+
+Dataset = {"APEACH": Apeach_Dataset, "kmhas": kmhas_Dataset}
 
 def main(config):
-    model = AutoModelForSequenceClassification.from_pretrained(config["checkpoint_dir"], num_labels=config["num_labels"], problem_type="multi_label_classification")
+    if config["multi_label"]:
+        model = AutoModelForSequenceClassification.from_pretrained(
+            config["checkpoint_dir"], 
+            num_labels=config["num_labels"], 
+            problem_type="multi_label_classification"
+        )
+    else:
+        model = AutoModelForSequenceClassification.from_pretrained(
+            config["model_name"], 
+            num_labels=config["num_labels"]
+        )
 
     device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
     model.to(device)
 
     valid_dataset = kmhas_Dataset(config["valid_dir"], config["model_name"])
 
-    def compute_metrics(pred):
-        sigmoid = torch.nn.Sigmoid()
-        
-        labels = pred.label_ids
-        probs = sigmoid(torch.tensor(pred.predictions))
-        preds = torch.zeros(probs.shape)
-        preds[torch.where(probs >= 0.5)] = 1
-        
-        f1 = calc_f1_score(preds, labels)
-        auprc = roc_auc_score(labels, preds, average="macro")
-        acc = accuracy_score(labels, preds)
-        
-        return {
-            "micro f1 score": f1,
-            "auprc": auprc*100,
-            "accuracy": acc
-        }
+    CM = Compute_metrics(multi_label=config["multi_label"], num_labels=config["num_labels"])
+    compute_metrics = CM.compute_metrics
         
     trainer = Trainer(
         model=model,
@@ -43,20 +37,12 @@ def main(config):
 
     result = trainer.predict(valid_dataset)
     
-    with open(config["label_map_dir"], "rb") as f:
-        label_map = pickle.load(f)
+    preds = get_prediction(result, config["label_map_dir"], config["multi_label"])
     
-    preds = []
-    for pred in result.predictions:
-        pred_label = []
-        for i, p in enumerate(pred):
-            if p > 0.5:
-                pred_label.append(label_map[i])
-        preds.append(pred_label)
-        
     df = valid_dataset.df
     df["pred"] = preds
     df.to_csv(config["result_dir"])
+    
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Hate Speech Classification')
