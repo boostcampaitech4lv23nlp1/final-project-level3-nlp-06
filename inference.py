@@ -43,7 +43,8 @@ def main(config):
     
     df = valid_dataset.df
     df["pred"] = preds
-    df["probs"] = [str(np.round(p, 2)) for p in result.predictions]
+    probs = torch.sigmoid(torch.tensor(result.predictions))
+    df["probs"] = [str(np.round(p, 2).tolist()) for p in probs.tolist()]
     df.to_csv(config["result_dir"])
     
 
