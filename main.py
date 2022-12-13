@@ -3,6 +3,7 @@ from transformers import AutoModelForSequenceClassification, TrainingArguments, 
 from sklearn.metrics import accuracy_score
 import wandb
 import yaml
+import argparse
 
 from data import Apeach_Dataset
 from utils import calc_f1_score, Auprc
@@ -66,6 +67,10 @@ def main(config):
     trainer.train()
 
 if __name__ == "__main__":
-    with open("config.yaml", "r") as f:
+    parser = argparse.ArgumentParser(description='Hate Speech Classification')
+    parser.add_argument("--conf", type=str, default="config.yaml", help="config file path(.yaml)")
+    args = parser.parse_args()
+    with open(args.conf, "r") as f:
         config = yaml.load(f, Loader=yaml.Loader)
     main(config)
+    
