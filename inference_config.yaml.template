@@ -1,0 +1,6 @@
+num_labels: 라벨 수(int)
+model_name: huggingface 토크나이저 이름(str)
+checkpoint_dir: 모델 checkpoint 경로(str)
+
+valid_dir: 평가할 valid csv 경로(str)
+result_dir: 결과 csv 저장할 경로(str)
