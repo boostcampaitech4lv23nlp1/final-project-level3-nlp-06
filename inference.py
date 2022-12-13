@@ -22,7 +22,7 @@ def main(config):
         sigmoid = torch.nn.Sigmoid()
         
         labels = pred.label_ids
-        probs = sigmoid(pred.predictions)
+        probs = sigmoid(torch.tensor(pred.predictions))
         preds = torch.zeros(probs.shape)
         preds[torch.where(probs >= 0.5)] = 1
         
