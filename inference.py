@@ -43,11 +43,16 @@ def main(config):
 
     result = trainer.predict(valid_dataset)
     
-    preds = [np.argmax(pred) for pred in result.predictions]
-    
     with open(config["label_map_dir"], "rb") as f:
         label_map = pickle.load(f)
-    preds = [label_map[pred] for pred in preds]
+    
+    preds = []
+    for pred in result.predictions:
+        pred_label = []
+        for i, p in enumerate(pred):
+            if p > 0.5:
+                pred_label.append(label_map[i])
+        preds.append(pred_label)
         
     df = valid_dataset.df
     df["pred"] = preds
