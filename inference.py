@@ -2,6 +2,7 @@ import torch
 from transformers import AutoModelForSequenceClassification, TrainingArguments, Trainer
 import yaml
 import argparse
+import numpy as np
 
 from data import Apeach_Dataset, kmhas_Dataset
 from utils import Compute_metrics, get_prediction
@@ -42,6 +43,7 @@ def main(config):
     
     df = valid_dataset.df
     df["pred"] = preds
+    df["probs"] = [str(np.round(p, 2)) for p in result.predictions]
     df.to_csv(config["result_dir"])
     
 
