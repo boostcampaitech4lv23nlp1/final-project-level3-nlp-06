@@ -4,35 +4,38 @@ from sklearn.metrics import accuracy_score, roc_auc_score
 import yaml
 import argparse
 import numpy as np
+import pickle
 
-from data import Apeach_Dataset
+from data import Apeach_Dataset, kmhas_Dataset
 from utils import calc_f1_score, Auprc
 
 
 def main(config):
-    model = AutoModelForSequenceClassification.from_pretrained(config["checkpoint_dir"], num_labels=config["num_labels"])
+    model = AutoModelForSequenceClassification.from_pretrained(config["checkpoint_dir"], num_labels=config["num_labels"], problem_type="multi_label_classification")
 
     device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
     model.to(device)
 
-    valid_dataset = Apeach_Dataset(config["valid_dir"], config["model_name"])
+    valid_dataset = kmhas_Dataset(config["valid_dir"], config["model_name"])
 
     def compute_metrics(pred):
+        sigmoid = torch.nn.Sigmoid()
+        
         labels = pred.label_ids
-        preds = pred.predictions.argmax(-1)
-        probs = pred.predictions
+        probs = sigmoid(pred.predictions)
+        preds = torch.zeros(probs.shape)
+        preds[torch.where(probs >= 0.5)] = 1
         
         f1 = calc_f1_score(preds, labels)
-        auprc_obj = Auprc(config.num_labels)
-        auprc = auprc_obj.calc(probs, labels)
+        auprc = roc_auc_score(labels, preds, average="macro")
         acc = accuracy_score(labels, preds)
         
         return {
             "micro f1 score": f1,
-            "auprc": auprc,
+            "auprc": auprc*100,
             "accuracy": acc
         }
-
+        
     trainer = Trainer(
         model=model,
         compute_metrics=compute_metrics
@@ -42,6 +45,10 @@ def main(config):
     
     preds = [np.argmax(pred) for pred in result.predictions]
     
+    with open(config["label_map_dir"], "rb") as f:
+        label_map = pickle.load(f)
+    preds = [label_map[pred] for pred in preds]
+        
     df = valid_dataset.df
     df["pred"] = preds
     df.to_csv(config["result_dir"])
