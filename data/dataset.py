@@ -70,7 +70,7 @@ class kmhas_Dataset(BASE_Dataset):
         
     def preprocess_dataframe(self, df):
         text = list(df["text"])
-        label = [eval(label.replace(" ", ", ")) for label in df['label']]
+        label = [eval(label) for label in df['label']]
         label = self.enc.fit_transform(label)
         
         return text, label
