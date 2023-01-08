@@ -28,7 +28,7 @@ class KOLD_dataset:
         return negatives
 
     def __len__(self):
-        return len(self.negatives['target'])
+        return len(self.negatives['target'])//self.batch_size
         
     def tokenize(self, sentence):
         tokenized_sentence = self.tokenizer(
