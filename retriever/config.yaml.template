@@ -1,0 +1,22 @@
+# wandb
+wandb_project: "KOLD-Retriever"
+wandb_name: "basic"
+wandb_note: "첫 실험"
+wandb_entity: "happy06"
+wandb_group: ""
+
+# dataset
+model_name: pretrained huggingface model name
+train_path: train data path in json format. # [{"title": title, "positive": [p1(str), ...], "negative": [n1(str), ...]}, ...]
+valid_path: valid data path in json format.
+batch_size: 16
+shuffle: True
+
+# trainer
+epochs: 5
+device: "cuda"
+weight_decay: 0.01
+learning_rate: 3.e-5
+warmup_ratio: 0.5
+eval_step: 1000
+model_save_path: Folder to save model. It'll be saved every 'eval_step'.
