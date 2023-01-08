@@ -1,1 +1,1 @@
-from retriever_dataset import KOLD_dataset
+from .retriever_dataset import KOLD_dataset

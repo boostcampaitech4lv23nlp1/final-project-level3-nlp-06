@@ -4,10 +4,10 @@ import json
 
 
 class KOLD_dataset:
-    def __init__(self, config):
+    def __init__(self, config, data_path):
         self.config = config
         self.tokenizer = AutoTokenizer.from_pretrained(self.config["model_name"])
-        with open(self.config["kold_data_path"], "r", encoding='utf-8') as f:
+        with open(data_path, "r", encoding='utf-8') as f:
             self.data = json.load(f) # [{"title": title, "positive": [p1(str), ...], "negative": [n1(str), ...]}]
         self.negatives = self.organize_with_negative(self.data) # {"target": [n1(str), n2(str)...], "id": [0, 0, ...]}
         self.batch_size = config["batch_size"]
