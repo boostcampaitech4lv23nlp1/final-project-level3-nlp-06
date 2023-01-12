@@ -6,6 +6,7 @@ from sklearn.metrics import f1_score
 
 from tqdm import tqdm
 import wandb
+import os
 
 
 class CNNTrainer:
@@ -17,6 +18,8 @@ class CNNTrainer:
         
         self.criterion = nn.BCELoss()
         self.optimizer = AdamW(self.model.parameters(), lr=config["lr"])
+        self.best_model = None
+        self.best_f1 = 0
     
     def train(self):
         wandb.init(
@@ -58,4 +61,9 @@ class CNNTrainer:
                 valid_loss += loss
             f1 = f1_score(preds, self.valid_dataset.labels)
             wandb.log({"valid loss": valid_loss/len(self.valid_loader), "f1 score": f1})
+            if f1 > self.best_f1:
+                self.best_f1 = f1
+                self.best_model = self.model.state_dict()
+        best_model_path = os.path.join(self.config["checkpoint_dir"], "pytorch_model.bin")
+        torch.save(self.best_model.state_dict(), best_model_path)
         
