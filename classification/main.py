@@ -5,11 +5,14 @@ import wandb
 import yaml
 import argparse
 
-from data import Apeach_Dataset, kmhas_Dataset
-from utils import Compute_metrics
+from data import Apeach_Dataset, kmhas_Dataset, KOLD_Dataset
+from model import CNNModel, multi_label_bert, bi_label_bert
+from trainer import HuggingfaceTrainer, CNNTrainer
 
 
-Dataset = {"APEACH": Apeach_Dataset, "kmhas": kmhas_Dataset}
+Dataset = {"APEACH": Apeach_Dataset, "kmhas": kmhas_Dataset, "kold": KOLD_Dataset}
+trainer = {"huggingface": HuggingfaceTrainer, "cnn": CNNTrainer}
+
 
 def main(config):
     if config["multi_label"]:
@@ -30,36 +33,7 @@ def main(config):
     train_dataset = Dataset[config["dataset"]](config["train_dir"], config["model_name"])
     valid_dataset = Dataset[config["dataset"]](config["valid_dir"], config["model_name"])
     
-    CM = Compute_metrics(multi_label=config["multi_label"], num_labels=config["num_labels"])
-    compute_metrics = CM.compute_metrics
-
-    wandb.init(project=config["wandb_project"], entity=config["wandb_entity"], name=config["wandb_name"])
-
-    training_args = TrainingArguments(
-        output_dir=config["checkpoint_dir"],
-        save_total_limit=2,
-        save_steps=config["save_step"],
-        num_train_epochs=config["epochs"],
-        learning_rate=config["lr"],
-        per_device_train_batch_size=config["batch_size"],
-        per_device_eval_batch_size=config["batch_size"],
-        warmup_ratio=0.5,
-        weight_decay=0.01,
-        logging_dir="./logs",
-        logging_steps=100,
-        evaluation_strategy='steps',
-        eval_steps=config["eval_step"],
-        load_best_model_at_end=True,
-        report_to='wandb',
-    )
-
-    trainer = Trainer(
-        model=model,
-        args=training_args,
-        train_dataset=train_dataset,
-        eval_dataset=valid_dataset,
-        compute_metrics=compute_metrics
-    )
+    trainer = trainer[config["trainer"]](config, model, train_dataset, valid_dataset)
 
     trainer.train()
 
