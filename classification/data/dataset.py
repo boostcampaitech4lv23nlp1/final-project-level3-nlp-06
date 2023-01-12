@@ -88,3 +88,28 @@ class kmhas_Dataset(BASE_Dataset):
         
         return encoded_text
     
+    
+class KOLD_Dataset(Dataset):
+    def __init__(self, csv_path, tokenizer_name="monologg/koelectra-base-v3-discriminator"):
+        super(KOLD_Dataset, self).__init__(csv_path, tokenizer_name)
+        self.tokenizer = AutoTokenizer.from_pretrained(tokenizer_name)
+        self.sentences = list(self.df['comment'])
+        self.label = [1. if off == True else 0. for off in self.df['OFF']]
+        self.tokenized_sentences = self.tokenizer(
+            self.sentences,
+            padding="max_length",
+            max_length=128,
+            return_tensors="pt"
+        )
+        
+    def __len__(self):
+        return len(self.sentences)
+    
+    def __getitem__(self, idx):
+        return {
+            "input_ids": self.tokenized_sentences['input_ids'][idx],
+            "token_type_ids": self.tokenized_sentences['token_type_ids'][idx],
+            "attention_mask": self.tokenized_sentences['attention_mask'][idx],
+            "label": self.labels[idx]
+        }
+        
