@@ -12,35 +12,28 @@ class BASE_Dataset(Dataset):
         self.tokenizer = AutoTokenizer.from_pretrained(tokenizer_name)
         self.text = None
         self.label = None
-        self.label2num = None
-        
+        self.tokenized_sentences = None
         
     def preprocess_dataframe(self):
         raise NotImplementedError
-        
-        
-    def set_label2num(self, label):
-        labels = list(set(label))
-        label2num = {label: i for i, label in enumerate(labels)}
-        print("label mapped to :", label2num)
-        
-        return label2num
     
-    
-    def __getitem__(self, idx):
-        encoded_text = self.tokenizer.encode_plus(
-            text=self.text[idx],
-            return_tensors='pt',
-            max_length=256,
+    def encoding_sentences(self):
+        tokenized_sentences = self.tokenizer(
+            self.text,
+            max_length=128,
             truncation=True,
             padding="max_length",
+            return_tensors="pt"
         )
-        encoded_text = {k: v.squeeze() for k, v in encoded_text.items()}
-        label = self.label2num[self.label[idx]]
-        encoded_text["label"] = torch.tensor(label)
-        
-        return encoded_text
+        return tokenized_sentences
     
+    def __getitem__(self, idx):
+        return {
+            "input_ids": self.tokenized_sentences['input_ids'][idx],
+            "token_type_ids": self.tokenized_sentences['token_type_ids'][idx],
+            "attention_mask": self.tokenized_sentences['attention_mask'][idx],
+            "label": self.label[idx]
+        }
     
     def __len__(self):
         return len(self.text)
@@ -50,9 +43,7 @@ class Apeach_Dataset(BASE_Dataset):
     def __init__(self, csv_path, tokenizer_name):
         super(Apeach_Dataset, self).__init__(csv_path, tokenizer_name)
         self.text, self.label = self.preprocess_dataframe(self.df)
-        self.label2num = self.set_label2num(self.label)
-        self.num_labels = len(self.label2num)
-        
+        self.tokenized_sentences = self.encoding_sentences()
         
     def preprocess_dataframe(self, df):
         text = list(df['text'])
@@ -64,52 +55,24 @@ class Apeach_Dataset(BASE_Dataset):
 class kmhas_Dataset(BASE_Dataset):
     def __init__(self, csv_path, tokenizer_name):
         super(kmhas_Dataset, self).__init__(csv_path, tokenizer_name)
-        self.enc = MultiLabelBinarizer()
         self.text, self.label = self.preprocess_dataframe(self.df)
-        self.num_labels = 9
+        self.tokenized_sentences = self.encoding_sentences()
         
     def preprocess_dataframe(self, df):
         text = list(df["text"])
-        label = [eval(label) for label in df['label']]
-        label = self.enc.fit_transform(label)
-        
-        return text, label
-        
-    def __getitem__(self, idx):
-        encoded_text = self.tokenizer.encode_plus(
-            text=self.text[idx],
-            return_tensors='pt',
-            max_length=256,
-            truncation=True,
-            padding="max_length",
-        )
-        encoded_text = {k: v.squeeze() for k, v in encoded_text.items()}
-        encoded_text["label"] = self.label[idx]
-        
-        return encoded_text
+        labels = [0 if label == "[8]" else 1 for label in df["label"]]
+        return text, labels
     
     
 class KOLD_Dataset(Dataset):
-    def __init__(self, csv_path, tokenizer_name="monologg/koelectra-base-v3-discriminator"):
+    def __init__(self, csv_path, tokenizer_name):
         super(KOLD_Dataset, self).__init__(csv_path, tokenizer_name)
         self.tokenizer = AutoTokenizer.from_pretrained(tokenizer_name)
-        self.sentences = list(self.df['comment'])
-        self.label = [1. if off == True else 0. for off in self.df['OFF']]
-        self.tokenized_sentences = self.tokenizer(
-            self.sentences,
-            padding="max_length",
-            max_length=128,
-            return_tensors="pt"
-        )
+        self.text, self.label = self.preprocess_dataframe(self.df)
+        self.tokenized_sentences = self.encoding_sentences()
         
-    def __len__(self):
-        return len(self.sentences)
-    
-    def __getitem__(self, idx):
-        return {
-            "input_ids": self.tokenized_sentences['input_ids'][idx],
-            "token_type_ids": self.tokenized_sentences['token_type_ids'][idx],
-            "attention_mask": self.tokenized_sentences['attention_mask'][idx],
-            "label": self.labels[idx]
-        }
+    def preprocess_dataframe(self, df):
+        text = list(self.df['comment'])
+        label = [1. if off == True else 0. for off in self.df['OFF']]
+        return text, label
         
