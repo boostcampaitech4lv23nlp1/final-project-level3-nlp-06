@@ -35,7 +35,7 @@ class HuggingfaceTrainer:
             compute_metrics=compute_metrics
         )
         
-    def train():
+    def train(self):
         wandb.init(
             project=self.config["wandb_project"], 
             entity=self.config["wandb_entity"], 
