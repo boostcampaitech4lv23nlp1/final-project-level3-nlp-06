@@ -8,7 +8,6 @@ from sklearn.metrics import f1_score
 
 from data import Apeach_Dataset, kmhas_Dataset, KOLD_Dataset
 from model import bi_label_bert, multi_label_bert, CNNModel
-from utils import Compute_metrics, get_prediction
 
 
 Dataset = {"APEACH": Apeach_Dataset, "kmhas": kmhas_Dataset, "kold": KOLD_Dataset}
