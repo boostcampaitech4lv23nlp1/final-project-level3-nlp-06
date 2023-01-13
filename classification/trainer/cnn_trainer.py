@@ -8,7 +8,7 @@ from tqdm import tqdm
 import wandb
 import os
 
-
+## TODO: CNN Trainer도 huggingface trainer로 합치기.
 class CNNTrainer:
     def __init__(self, config, model, train_dataset, valid_dataset) -> None:
         self.config = config
@@ -34,10 +34,8 @@ class CNNTrainer:
             self.model.train()
             for data in self.train_loader:
                 batch_size = data['input_ids'].shape[0]
-                inputs = data['input_ids']
-                label = data['label']
-                inputs = inputs.to('cuda')
-                label = label.to('cuda').float()
+                inputs = data['input_ids'].to('cuda')
+                label = data['label'].to('cuda')
                 outputs = self.model(inputs).reshape(batch_size, 1)
                 
                 loss = self.criterion(outputs, label)
@@ -50,20 +48,23 @@ class CNNTrainer:
             preds = []
             self.model.eval()
             for data in self.valid_loader:
-                inputs = data['input_ids']
-                label = data['label']
-                inputs = inputs.to('cuda')
-                label = label.to('cuda').float()
+                batch_size = data['input_ids'].shape[0]
+                inputs = data['input_ids'].to('cuda')
+                label = data['label'].to('cuda')
                 with torch.no_grad():
                     outputs = self.model(inputs).reshape(batch_size, 1)
-                preds += [1 if output.item() > 0.5 else 0 for output in outputs.cpu()]
                 loss = self.criterion(outputs, label)
                 valid_loss += loss
+                
+                preds += [1 if output.item() > 0.5 else 0 for output in outputs.cpu()]
+                
             f1 = f1_score(preds, self.valid_dataset.labels)
             wandb.log({"valid loss": valid_loss/len(self.valid_loader), "f1 score": f1})
+            
             if f1 > self.best_f1:
                 self.best_f1 = f1
                 self.best_model = self.model.state_dict()
+            
         best_model_path = os.path.join(self.config["checkpoint_dir"], "pytorch_model.bin")
         torch.save(self.best_model.state_dict(), best_model_path)
         
