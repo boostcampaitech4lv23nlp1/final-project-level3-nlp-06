@@ -1,13 +1,11 @@
 from transformers import TrainingArguments, Trainer
-from utils import Compute_metrics
+from sklearn.metrics import f1_score
 import wandb
 
 
 class HuggingfaceTrainer:
     def __init__(self, config, model, train_dataset, valid_dataset):
         self.config = config
-        CM = Compute_metrics(multi_label=config["multi_label"], num_labels=config["num_labels"])
-        compute_metrics = CM.compute_metrics
 
         training_args = TrainingArguments(
             output_dir=config["checkpoint_dir"],
@@ -20,8 +18,8 @@ class HuggingfaceTrainer:
             warmup_ratio=0.5,
             weight_decay=0.01,
             logging_dir="./logs",
-            logging_steps=100,
-            evaluation_strategy='steps',
+            logging_steps=config["eval_step"],
+            evaluation_strategy="steps",
             eval_steps=config["eval_step"],
             load_best_model_at_end=True,
             report_to='wandb',
@@ -32,8 +30,11 @@ class HuggingfaceTrainer:
             args=training_args,
             train_dataset=train_dataset,
             eval_dataset=valid_dataset,
-            compute_metrics=compute_metrics
+            compute_metrics=self.calc_f1_score
         )
+        
+    def calc_f1_score(self, preds, labels):
+        return f1_score(labels, preds, average="micro") * 100.0
         
     def train(self):
         wandb.init(
