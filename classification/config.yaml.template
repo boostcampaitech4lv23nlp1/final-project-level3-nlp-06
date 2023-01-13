@@ -3,14 +3,18 @@ model_name: huggingface 모델 이름(str)
 wandb_project: wandb project 이름(str)
 wandb_entity: wandb entity(str)
 wandb_name: wandb 실험 이름(str)
+wandb_group: wandb 그룹 이름(str)
 checkpoint_dir: wandb checkpoint 저장 경로
 
 train_dir: 훈련셋 csv 경로(str)
 valid_dir: 평가셋 csv 경로(str)
-label_map_dir: 데이터 라벨 매핑 pickle 파일 경로(str)
-num_labels: 라벨 수(int)
-multi_label: multi-label classification 문제인지(bool)
-dataset: dataset 종류 (str) ["APEACH", "kmhas"]
+
+model: 모델 유형 ["CNN", "Transformer"]
+# model type이 'CNN'일 때만 사용됨.
+get_bert_embedding: True
+
+num_labels: 1
+dataset: dataset 종류 (str) ["APEACH", "BEEP!", "Unsmile", "k-mhas", "KOLD"]
 
 batch_size: (int)
 epochs: (int)
