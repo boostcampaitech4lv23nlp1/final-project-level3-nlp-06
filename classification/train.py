@@ -3,13 +3,13 @@ import torch
 import argparse
 
 from data import Apeach_Dataset, kmhas_Dataset, KOLD_Dataset
-from model import CNNModel, multi_label_bert, bi_label_bert
+from model import CNNModel, transformer
 from trainer import HuggingfaceTrainer, CNNTrainer
 
 
-Dataset = {"APEACH": Apeach_Dataset, "kmhas": kmhas_Dataset, "kold": KOLD_Dataset}
-models = {"CNN": CNNModel, "multi_label": multi_label_bert, "bi_label": bi_label_bert}
-trainer = {"CNN": CNNTrainer, "multi_label": HuggingfaceTrainer, "bi_label": HuggingfaceTrainer}
+Dataset = {"APEACH": Apeach_Dataset, "k-mhas": kmhas_Dataset, "KOLD": KOLD_Dataset}
+models = {"CNN": CNNModel, "Transformer": transformer}
+trainer = {"CNN": CNNTrainer, "Transformer": HuggingfaceTrainer}
 
 def main(config):
     device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")

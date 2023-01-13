@@ -1,2 +1,2 @@
-from .bert_model import multi_label_bert, bi_label_bert
+from .bert_model import transformer
 from .cnn_model import CNNModel

@@ -9,17 +9,12 @@ checkpoint_dir: wandb checkpoint 저장 경로
 train_dir: 훈련셋 csv 경로(str)
 valid_dir: 평가셋 csv 경로(str)
 
-model: 모델 유형 ["CNN", "multi-label", "bi-label"]
-# model type이 'multi-label'일 때만 사용됨.
-label_map_dir: 데이터 라벨 매핑 pickle 파일 경로(str)
+model: 모델 유형 ["CNN", "Transformer"]
 # model type이 'CNN'일 때만 사용됨.
 get_bert_embedding: True
 
-num_labels: 라벨 수(int)
-dataset: dataset 종류 (str) ["APEACH", "kmhas", "kold"]
-
-## TODO: CNN 모델도 huggingface trainer로 합치기.
-trainer: huggingface 쓸지 CNN 쓸지 ["huggingface", "cnn"]
+num_labels: 1
+dataset: dataset 종류 (str) ["APEACH", "k-mhas", "KOLD"]
 
 batch_size: (int)
 epochs: (int)
