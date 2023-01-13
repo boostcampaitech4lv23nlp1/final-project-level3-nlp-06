@@ -62,8 +62,10 @@ class CNNTrainer:
             
             if f1 > self.best_f1:
                 self.best_f1 = f1
-                self.best_model = self.model.state_dict()
-            
+                self.best_model = self.model.state_dict().copy()
+        
+        ## TODO: best model 저장하도록 수정하기. (현재는 왠지는 모르겠는데 마지막 모델이 저장됨.)
+        print("best f1 score :", self.best_f1)
         best_model_path = os.path.join(self.config["checkpoint_dir"], "pytorch_model.bin")
         torch.save(self.best_model, best_model_path)
         
