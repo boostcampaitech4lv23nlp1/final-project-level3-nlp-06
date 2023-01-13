@@ -14,7 +14,7 @@ model: 모델 유형 ["CNN", "Transformer"]
 get_bert_embedding: True
 
 num_labels: 1
-dataset: dataset 종류 (str) ["APEACH", "k-mhas", "KOLD"]
+dataset: dataset 종류 (str) ["APEACH", "BEEP!", "Unsmile", "k-mhas", "KOLD"]
 
 batch_size: (int)
 epochs: (int)
