@@ -48,7 +48,33 @@ class Apeach_Dataset(BASE_Dataset):
         label = list(df['class'])
         
         return text, label
+    
+
+class Beep_Dataset(BASE_Dataset):
+    def __init__(self, csv_path, tokenizer_name):
+        super(Apeach_Dataset, self).__init__(csv_path, tokenizer_name)
+        self.text, self.label = self.preprocess_dataframe(self.df)
+        self.tokenized_sentences = self.encoding_sentences(self.text)
         
+    def preprocess_dataframe(self, df):
+        text = list(df['comments'])
+        label = [1 if h == "hate" else 0 for h in df['hate']]
+        
+        return text, label
+        
+        
+class Unsmile_Dataset(BASE_Dataset):
+    def __init__(self, csv_path, tokenizer_name):
+        super(Apeach_Dataset, self).__init__(csv_path, tokenizer_name)
+        self.text, self.label = self.preprocess_dataframe(self.df)
+        self.tokenized_sentences = self.encoding_sentences(self.text)
+        
+    def preprocess_dataframe(self, df):
+        text = list(df['문장'])
+        label = list(df['clean'])
+        
+        return text, label
+    
     
 class kmhas_Dataset(BASE_Dataset):
     def __init__(self, csv_path, tokenizer_name):
