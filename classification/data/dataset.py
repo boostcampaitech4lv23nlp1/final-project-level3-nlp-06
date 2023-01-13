@@ -71,7 +71,7 @@ class Unsmile_Dataset(BASE_Dataset):
         
     def preprocess_dataframe(self, df):
         text = list(df['문장'])
-        label = list(df['clean'])
+        label = [0 if c == "0" else 1 for c in df["clean"]]
         
         return text, label
     
