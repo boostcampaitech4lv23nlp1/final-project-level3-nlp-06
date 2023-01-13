@@ -65,5 +65,5 @@ class CNNTrainer:
                 self.best_model = self.model.state_dict()
             
         best_model_path = os.path.join(self.config["checkpoint_dir"], "pytorch_model.bin")
-        torch.save(self.best_model.state_dict(), best_model_path)
+        torch.save(self.best_model, best_model_path)
         
