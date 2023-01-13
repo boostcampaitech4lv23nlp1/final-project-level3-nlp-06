@@ -9,7 +9,7 @@ from trainer import HuggingfaceTrainer, CNNTrainer
 
 Dataset = {"APEACH": Apeach_Dataset, "kmhas": kmhas_Dataset, "kold": KOLD_Dataset}
 models = {"CNN": CNNModel, "multi_label": multi_label_bert, "bi_label": bi_label_bert}
-trainer = {"huggingface": HuggingfaceTrainer, "cnn": CNNTrainer}
+trainer = {"CNN": CNNTrainer, "multi_label": HuggingfaceTrainer, "bi_label": HuggingfaceTrainer}
 
 def main(config):
     device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
@@ -19,7 +19,7 @@ def main(config):
     model = models[config["model"]](config, train_dataset.tokenizer.vocab_size)
     model.to(device)
     
-    trainer = trainer[config["trainer"]](config, model, train_dataset, valid_dataset)
+    trainer = trainer[config["model"]](config, model, train_dataset, valid_dataset)
 
     trainer.train()
 
