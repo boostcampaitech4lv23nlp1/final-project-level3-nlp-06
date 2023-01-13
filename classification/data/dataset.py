@@ -1,8 +1,6 @@
-from torch.utils.data import Dataset
-import torch
 from transformers import AutoTokenizer
+from torch.utils.data import Dataset
 import pandas as pd
-from sklearn.preprocessing import MultiLabelBinarizer
 
 
 class BASE_Dataset(Dataset):
@@ -17,9 +15,9 @@ class BASE_Dataset(Dataset):
     def preprocess_dataframe(self):
         raise NotImplementedError
     
-    def encoding_sentences(self):
+    def encoding_sentences(self, text):
         tokenized_sentences = self.tokenizer(
-            self.text,
+            text,
             max_length=128,
             truncation=True,
             padding="max_length",
@@ -43,7 +41,7 @@ class Apeach_Dataset(BASE_Dataset):
     def __init__(self, csv_path, tokenizer_name):
         super(Apeach_Dataset, self).__init__(csv_path, tokenizer_name)
         self.text, self.label = self.preprocess_dataframe(self.df)
-        self.tokenized_sentences = self.encoding_sentences()
+        self.tokenized_sentences = self.encoding_sentences(self.text)
         
     def preprocess_dataframe(self, df):
         text = list(df['text'])
@@ -56,7 +54,7 @@ class kmhas_Dataset(BASE_Dataset):
     def __init__(self, csv_path, tokenizer_name):
         super(kmhas_Dataset, self).__init__(csv_path, tokenizer_name)
         self.text, self.label = self.preprocess_dataframe(self.df)
-        self.tokenized_sentences = self.encoding_sentences()
+        self.tokenized_sentences = self.encoding_sentences(self.text)
         
     def preprocess_dataframe(self, df):
         text = list(df["text"])
@@ -64,15 +62,15 @@ class kmhas_Dataset(BASE_Dataset):
         return text, labels
     
     
-class KOLD_Dataset(Dataset):
+class KOLD_Dataset(BASE_Dataset):
     def __init__(self, csv_path, tokenizer_name):
         super(KOLD_Dataset, self).__init__(csv_path, tokenizer_name)
         self.tokenizer = AutoTokenizer.from_pretrained(tokenizer_name)
         self.text, self.label = self.preprocess_dataframe(self.df)
-        self.tokenized_sentences = self.encoding_sentences()
+        self.tokenized_sentences = self.encoding_sentences(self.text)
         
     def preprocess_dataframe(self, df):
-        text = list(self.df['comment'])
-        label = [1. if off == True else 0. for off in self.df['OFF']]
+        text = list(df['comment'])
+        label = [1. if off == True else 0. for off in df['OFF']]
         return text, label
         
