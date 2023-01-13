@@ -6,6 +6,7 @@ import wandb
 class HuggingfaceTrainer:
     def __init__(self, config, model, train_dataset, valid_dataset):
         self.config = config
+        self.labels = valid_dataset.label
 
         training_args = TrainingArguments(
             output_dir=config["checkpoint_dir"],
@@ -30,11 +31,12 @@ class HuggingfaceTrainer:
             args=training_args,
             train_dataset=train_dataset,
             eval_dataset=valid_dataset,
-            compute_metrics=self.calc_f1_score
+            ## TODO: calculate f1 score
+            # compute_metrics=self.calc_f1_score
         )
         
-    def calc_f1_score(self, preds, labels):
-        return f1_score(labels, preds, average="micro") * 100.0
+    def calc_f1_score(self, preds):
+        return f1_score(self.labels, preds, average="micro") * 100.0
         
     def train(self):
         wandb.init(
