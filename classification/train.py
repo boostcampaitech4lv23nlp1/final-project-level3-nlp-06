@@ -2,14 +2,15 @@ import yaml
 import torch
 import argparse
 
-from data import Apeach_Dataset, kmhas_Dataset, KOLD_Dataset
+from data import Apeach_Dataset, kmhas_Dataset, KOLD_Dataset, Beep_Dataset, Unsmile_Dataset
 from model import CNNModel, transformer
 from trainer import HuggingfaceTrainer, CNNTrainer
 
 
-Dataset = {"APEACH": Apeach_Dataset, "k-mhas": kmhas_Dataset, "KOLD": KOLD_Dataset}
+Dataset = {"APEACH": Apeach_Dataset, "BEEP!": Beep_Dataset, "Unsmile": Unsmile_Dataset, "k-mhas": kmhas_Dataset, "KOLD": KOLD_Dataset}
 models = {"CNN": CNNModel, "Transformer": transformer}
 trainers = {"CNN": CNNTrainer, "Transformer": HuggingfaceTrainer}
+
 
 def main(config):
     device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
@@ -22,6 +23,7 @@ def main(config):
     trainer = trainers[config["model"]](config, model, train_dataset, valid_dataset)
 
     trainer.train()
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Hate Speech Classification')
