@@ -34,9 +34,10 @@ class CNNTrainer:
         for epoch in tqdm(range(self.config["epochs"])):
             self.model.train()
             for data in self.train_loader:
+                batch_size = data['input_ids'].shape[0]
                 inputs = data['input_ids'].to('cuda')
                 label = data['label'].to('cuda').float()
-                outputs = self.model(inputs).squeeze()
+                outputs = self.model(inputs).reshape(batch_size)
                 
                 loss = self.criterion(outputs, label)
                 wandb.log({"train loss": loss, "epochs": epoch})
@@ -48,10 +49,11 @@ class CNNTrainer:
             preds = []
             self.model.eval()
             for data in self.valid_loader:
+                batch_size = data['input_ids'].shape[0]
                 inputs = data['input_ids'].to('cuda')
                 label = data['label'].to('cuda').float()
                 with torch.no_grad():
-                    outputs = self.model(inputs).squeeze()
+                    outputs = self.model(inputs).reshape(batch_size)
                 loss = self.criterion(outputs, label)
                 valid_loss += loss
                 
