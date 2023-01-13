@@ -52,7 +52,7 @@ class Apeach_Dataset(BASE_Dataset):
 
 class Beep_Dataset(BASE_Dataset):
     def __init__(self, csv_path, tokenizer_name):
-        super(Apeach_Dataset, self).__init__(csv_path, tokenizer_name)
+        super(Beep_Dataset, self).__init__(csv_path, tokenizer_name)
         self.text, self.label = self.preprocess_dataframe(self.df)
         self.tokenized_sentences = self.encoding_sentences(self.text)
         
@@ -65,7 +65,7 @@ class Beep_Dataset(BASE_Dataset):
         
 class Unsmile_Dataset(BASE_Dataset):
     def __init__(self, csv_path, tokenizer_name):
-        super(Apeach_Dataset, self).__init__(csv_path, tokenizer_name)
+        super(Unsmile_Dataset, self).__init__(csv_path, tokenizer_name)
         self.text, self.label = self.preprocess_dataframe(self.df)
         self.tokenized_sentences = self.encoding_sentences(self.text)
         
