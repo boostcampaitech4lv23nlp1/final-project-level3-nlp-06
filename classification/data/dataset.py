@@ -58,7 +58,7 @@ class Beep_Dataset(BASE_Dataset):
         
     def preprocess_dataframe(self, df):
         text = list(df['comments'])
-        label = [1 if h == "hate" else 0 for h in df['hate']]
+        label = [0 if h == "none" else 1 for h in df['hate']]
         
         return text, label
         
