@@ -57,7 +57,7 @@ class CNNTrainer:
                 
                 preds += [1 if output.item() > 0.5 else 0 for output in outputs.cpu()]
                 
-            f1 = f1_score(preds, self.valid_dataset.labels)
+            f1 = f1_score(preds, self.valid_dataset.label)
             wandb.log({"valid loss": valid_loss/len(self.valid_loader), "f1 score": f1})
             
             if f1 > self.best_f1:
