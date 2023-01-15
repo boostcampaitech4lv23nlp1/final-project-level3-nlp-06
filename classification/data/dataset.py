@@ -1,4 +1,4 @@
-from tokenization_kocharelectra import KoCharElectraTokenizer
+from .tokenization_kocharelectra import KoCharElectraTokenizer
 from transformers import AutoTokenizer
 from torch.utils.data import Dataset
 import pandas as pd
