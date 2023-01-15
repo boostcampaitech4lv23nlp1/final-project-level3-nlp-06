@@ -95,7 +95,6 @@ class kmhas_Dataset(BASE_Dataset):
 class KOLD_Dataset(BASE_Dataset):
     def __init__(self, csv_path, tokenizer_name):
         super(KOLD_Dataset, self).__init__(csv_path, tokenizer_name)
-        self.tokenizer = AutoTokenizer.from_pretrained(tokenizer_name)
         self.text, self.label = self.preprocess_dataframe(self.df)
         self.tokenized_sentences = self.encoding_sentences(self.text)
         
