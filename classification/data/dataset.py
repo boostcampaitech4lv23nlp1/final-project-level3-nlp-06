@@ -1,3 +1,4 @@
+from .tokenization_kocharelectra import KoCharElectraTokenizer
 from transformers import AutoTokenizer
 from torch.utils.data import Dataset
 import pandas as pd
@@ -7,7 +8,10 @@ class BASE_Dataset(Dataset):
     def __init__(self, csv_path: str, tokenizer_name: str):
         super(BASE_Dataset, self).__init__()
         self.df = pd.read_csv(csv_path)
-        self.tokenizer = AutoTokenizer.from_pretrained(tokenizer_name)
+        if tokenizer_name == "monologg/kocharelectra-base-discriminator":
+            self.tokenizer = KoCharElectraTokenizer.from_pretrained(tokenizer_name)
+        else:
+            self.tokenizer = AutoTokenizer.from_pretrained(tokenizer_name)
         self.text = None
         self.label = None
         self.tokenized_sentences = None
@@ -91,7 +95,6 @@ class kmhas_Dataset(BASE_Dataset):
 class KOLD_Dataset(BASE_Dataset):
     def __init__(self, csv_path, tokenizer_name):
         super(KOLD_Dataset, self).__init__(csv_path, tokenizer_name)
-        self.tokenizer = AutoTokenizer.from_pretrained(tokenizer_name)
         self.text, self.label = self.preprocess_dataframe(self.df)
         self.tokenized_sentences = self.encoding_sentences(self.text)
         
