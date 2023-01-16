@@ -1,0 +1,9 @@
+train_path: "train csv 파일 경로. csv 파일은 'comment' column에 문장들을 담고 있어야 함."
+valid_path: "validation csv 파일 경로. csv 파일은 'comment' column에 문장들을 담고 있어야 함."
+
+generator: "Pretrain된 Electra generator 모델 이름."
+discriminator: "Pretrain된 Electra discriminator 모델 이름."
+
+save_path: "모델을 저장할 파일 이름. 만약 'model'이라면, 'model_1.pt', 'model_2.pt' 이런 식으로 에포크마다 저장."
+wandb_name: "wandb log 이름."
+wandb_entity: "wandb entity 이름."
