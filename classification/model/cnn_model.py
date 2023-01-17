@@ -38,3 +38,23 @@ class CNNModel(nn.Module):
         x = self.Embedding(inputs)
         return self.Layer(x)
     
+
+class VerifiableCNN(CNNModel):
+    def __init__(self, config, vocab_size):
+        super(VerifiableCNN, self).__init__(config, vocab_size)
+        self.Layer = nn.Sequential(
+            self.conv_block(128, 128), # 384
+            self.conv_block(128, 128), # 192
+            self.conv_block(128, 128), # 96
+            nn.Linear(96, 1),
+        )
+        self.fc = nn.Linear(128, 1)
+        self.sigmoid = nn.Sigmoid()
+        
+    def forward(self, inputs):
+        x = self.Embedding(inputs)
+        x = self.Layer(x)
+        x = x.squeeze(-1)
+        x = self.fc(x)
+        return self.sigmoid(x)
+        
