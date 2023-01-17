@@ -10,7 +10,7 @@ from trainer import HuggingfaceTrainer, CNNTrainer
 
 Dataset = {"APEACH": Apeach_Dataset, "BEEP!": Beep_Dataset, "Unsmile": Unsmile_Dataset, "k-mhas": kmhas_Dataset, "KOLD": KOLD_Dataset}
 models = {"CNN": CNNModel, "VerifiableCNN": VerifiableCNN, "Transformer": transformer}
-trainers = {"CNN": CNNTrainer, "Transformer": HuggingfaceTrainer}
+trainers = {"CNN": CNNTrainer, "VerifiableCNN": CNNTrainer, "Transformer": HuggingfaceTrainer}
 
 
 def set_seed(random_seed):
