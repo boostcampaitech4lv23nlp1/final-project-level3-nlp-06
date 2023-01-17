@@ -1,0 +1,24 @@
+### Style Classifier ###
+# Embeddings
+classifier_path: "/opt/ml/final/model/kold_unsmile_beep_kmhas.bin"
+embedding_model_name: "monologg/koelectra-base-v3-discriminator"
+model_name: "monologg/koelectra-base-v3-discriminator"
+get_bert_embedding: True
+
+### BART ###
+# Model
+bart_path: "/opt/ml/saved_model/jh_thxbart_3_loss.pt"
+# Data
+train_data_path: "/opt/ml/dataset/smilestyle_filtered_train.csv"
+eval_data_path: "/opt/ml/dataset/smilestyle_filtered_valid.csv"
+# Hyperparameters
+max_length: 384
+epoch : 3
+lr : 1.0e-5
+batch_size : 4
+
+### Weights & Biases ###
+wandb_project: "thank-you-bart"
+wandb_name: "base"
+wandb_entity: "ymnseol"
+wandb_group: "test"
