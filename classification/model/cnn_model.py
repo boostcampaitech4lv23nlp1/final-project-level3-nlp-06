@@ -35,7 +35,7 @@ class CNNModel(nn.Module):
             nn.MaxPool1d(kernel_size=2)
         )
         
-    def forward(self, inputs):
+    def forward(self, inputs, mask):
         x = self.Embedding(inputs)
         return self.Layer(x)
     
