@@ -53,8 +53,10 @@ class VerifiableCNN(nn.Module):
         self.Layer = nn.Sequential(
             nn.Conv1d(768, 128, kernel_size=3, padding=1),
             nn.ReLU(),
+            nn.Dropout(0.2),
             nn.Conv1d(128, 1, kernel_size=3, padding=1),
             nn.ReLU(),
+            nn.Dropout(0.2),
         )
         self.sigmoid = nn.Sigmoid()
         
