@@ -1,8 +1,7 @@
 ### Style Classifier ###
 # Embeddings
-classifier_path: "/opt/ml/final/model/kold_unsmile_beep_kmhas.bin"
-embedding_model_name: "monologg/koelectra-base-v3-discriminator"
-model_name: "monologg/koelectra-base-v3-discriminator"
+classifier_path: "Model file path to load the style classifier"
+model_name: "Pre-trained model name in Hugging Face to load the embedding weights"
 get_bert_embedding: True
 
 ### BART ###
@@ -18,7 +17,7 @@ lr : 1.0e-5
 batch_size : 4
 
 ### Weights & Biases ###
-wandb_project: "thank-you-bart"
-wandb_name: "base"
-wandb_entity: "ymnseol"
-wandb_group: "test"
+wandb_project: "Weights & Biases project name. If you enter a name that does not exist, create a new project with this name."
+wandb_name: "Weights & Biases experiment name"
+wandb_entity: "Weights & Biases entity"
+wandb_group: "Weights & Biases group name"
