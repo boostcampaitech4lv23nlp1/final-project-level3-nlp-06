@@ -3,7 +3,7 @@ import torch
 import argparse
 
 from data import Apeach_Dataset, kmhas_Dataset, KOLD_Dataset, Beep_Dataset, Unsmile_Dataset
-from model import CNNModel, transformer
+from model import CNNModel, VerifiableCNN, transformer
 from trainer import HuggingfaceTrainer, CNNTrainer
 
 
