@@ -1,5 +1,6 @@
 import yaml
 import torch
+import random
 import argparse
 
 from data import Apeach_Dataset, kmhas_Dataset, KOLD_Dataset, Beep_Dataset, Unsmile_Dataset
@@ -12,8 +13,18 @@ models = {"CNN": CNNModel, "Transformer": transformer}
 trainers = {"CNN": CNNTrainer, "Transformer": HuggingfaceTrainer}
 
 
+def set_seed(random_seed):
+    torch.manual_seed(random_seed)
+    torch.cuda.manual_seed(random_seed)
+    torch.cuda.manual_seed_all(random_seed)  # if use multi-GPU
+    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.benchmark = False
+    random.seed(random_seed)
+    
+    
 def main(config):
     device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
+    set_seed(81)
 
     train_dataset = Dataset[config["dataset"]](config["train_dir"], config["model_name"])
     valid_dataset = Dataset[config["dataset"]](config["valid_dir"], config["model_name"])
