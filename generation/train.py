@@ -117,6 +117,7 @@ def main(config):
                     "sc_loss":sum(total_loss_sc)/len(total_loss_sc),
                     "bl_loss":sum(total_loss_co)/len(total_loss_co)
                 })
+                total_loss=[]
                 total_loss_ce=[]
                 total_loss_sc=[]
                 total_loss_co=[]
