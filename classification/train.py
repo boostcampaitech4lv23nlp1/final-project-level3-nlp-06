@@ -3,12 +3,13 @@ import torch
 import random
 import argparse
 
-from data import Apeach_Dataset, kmhas_Dataset, KOLD_Dataset, Beep_Dataset, Unsmile_Dataset
+from data import Apeach_Dataset, kmhas_Dataset, KOLD_Dataset, Beep_Dataset, Unsmile_Dataset, Span_Dataset
 from model import CNNModel, transformer
 from trainer import HuggingfaceTrainer, CNNTrainer
 
 
-Dataset = {"APEACH": Apeach_Dataset, "BEEP!": Beep_Dataset, "Unsmile": Unsmile_Dataset, "k-mhas": kmhas_Dataset, "KOLD": KOLD_Dataset}
+Dataset = {"APEACH": Apeach_Dataset, "BEEP!": Beep_Dataset, "Unsmile": Unsmile_Dataset, 
+           "k-mhas": kmhas_Dataset, "KOLD": KOLD_Dataset, "KOLD_SPAN": Span_Dataset}
 models = {"CNN": CNNModel, "Transformer": transformer}
 trainers = {"CNN": CNNTrainer, "Transformer": HuggingfaceTrainer}
 
