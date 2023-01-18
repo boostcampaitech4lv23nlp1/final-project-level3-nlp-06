@@ -3,6 +3,7 @@ import pandas as pd
 from tqdm import tqdm
 from torch.utils.data import Dataset
 from transformers import AutoTokenizer
+from multiprocessing import Pool
 
 
 ## TODO: config로부터 max_length 받기
@@ -20,7 +21,9 @@ class Span_Dataset(Dataset):
             return_offsets_mapping=True, 
             return_tensors="pt"
         )
-        self.labels = self.set_labels()
+        self.label_type="token_classification"
+        pool = Pool(processes=4)
+        self.labels = pool.map(self.set_labels, range(len(self.df['comment'])))
         
     def __len__(self):
         return self.inputs['input_ids'].shape[0]
@@ -30,41 +33,36 @@ class Span_Dataset(Dataset):
             "input_ids": self.inputs['input_ids'][index],
             "token_type_ids": self.inputs['token_type_ids'][index],
             "attention_mask": self.inputs['attention_mask'][index],
-            "label": self.labels[index]
+            "labels": self.labels[index]
         }
     
-    def set_labels(self, label_type="token_classification"):
-        assert label_type in ["token_classification", "index_classification"]
-        
-        labels = []
-        for target_idx in tqdm(range(len(self.df['comment']))):
-            start = eval(self.df['start_index'][target_idx])
-            end = eval(self.df['end_index'][target_idx])
+    def set_labels(self, target_idx):
+        start = eval(self.df['start_index'][target_idx])
+        end = eval(self.df['end_index'][target_idx])
 
-            span_ranges = []
+        span_ranges = []
 
-            for s, e in zip(start, end):
-                start_token_idx = -1
-                end_token_idx = -1
-                for i, mapping in enumerate(self.inputs['offset_mapping'][target_idx]):
-                    # charactor 위치가 token 길이 범위에 속한다면,
-                    if s in range(mapping[0].item(), mapping[1].item()):
-                        start_token_idx = i
-                    if e in range(mapping[0].item(), mapping[1].item()+1):
-                        end_token_idx = i
-                span_ranges.append((start_token_idx, end_token_idx))
-                
-            if label_type == "token_classification":
-                # For Token classification:
-                label = torch.zeros(self.max_length)
-                for s, e in span_ranges:
-                    label[s:e+1] = 1
-                labels.append(label)
-            elif label_type == "index_classification":
-                # For span index classification:
-                start_label = [span[0] for span in span_ranges]
-                end_label = [span[1] for span in span_ranges]
-                labels.append((start_label, end_label))
+        for s, e in zip(start, end):
+            start_token_idx = -1
+            end_token_idx = -1
+            for i, mapping in enumerate(self.inputs['offset_mapping'][target_idx]):
+                # charactor 위치가 token 길이 범위에 속한다면,
+                if s in range(mapping[0].item(), mapping[1].item()):
+                    start_token_idx = i
+                if e in range(mapping[0].item(), mapping[1].item()+1):
+                    end_token_idx = i
+            span_ranges.append((start_token_idx, end_token_idx))
+            
+        if self.label_type == "token_classification":
+            # For Token classification:
+            label = torch.tensor([-100 for _ in range(self.max_length)])
+            label[1:sum(self.inputs['attention_mask'][target_idx]).item()-1] = 0
+            for s, e in span_ranges:
+                label[s:e+1] = 1
+        elif self.label_type == "index_classification":
+            # For span index classification:
+            start_label = [span[0] for span in span_ranges]
+            end_label = [span[1] for span in span_ranges]
 
-        return labels
+        return label.tolist()
     
