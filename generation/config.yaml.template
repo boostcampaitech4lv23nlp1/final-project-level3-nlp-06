@@ -2,7 +2,7 @@
 # Embeddings
 classifier_path: "Model file path to load the style classifier"
 model_name: "Pre-trained model name in Hugging Face to load the embedding weights"
-get_bert_embedding: True
+get_bert_embedding: False # True if you load the new embedding weights from the pre-trained model of Hugging Face, False otherwise
 
 ### BART ###
 # Model
