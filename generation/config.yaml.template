@@ -2,6 +2,10 @@
 # Embeddings
 classifier_path: "Model file path to load the style classifier"
 model_name: "Pre-trained model name in Hugging Face to load the embedding weights"
+    # Even if you load the trained style classifier,
+    # you must write the name of used pre-trained model
+    # to construct inputs for the style classifier.
+    # See details in reward_utils.py > cal_sc_loss
 get_bert_embedding: False # True if you load the new embedding weights from the pre-trained model of Hugging Face, False otherwise
 
 ### BART ###
