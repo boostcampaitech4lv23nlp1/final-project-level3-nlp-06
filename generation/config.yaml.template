@@ -10,12 +10,12 @@ get_bert_embedding: False # True if you load the new embedding weights from the 
 
 ### BART ###
 # Model
-bart_path: "/opt/ml/saved_model/jh_thxbart_3_loss.pt"
+bart_path: "/opt/ml/saved_model/jh_thxbart_3_loss.pt"   # Model path to save the fine-tuned model
 # Data
 train_data_path: "/opt/ml/dataset/smilestyle_filtered_train.csv"
 eval_data_path: "/opt/ml/dataset/smilestyle_filtered_valid.csv"
 # Hyperparameters
-max_length: 384
+max_length: 384             # Number of max token when tokenize
 epoch : 3
 lr : 1.0e-5
 batch_size : 4
