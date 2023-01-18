@@ -1,0 +1,27 @@
+### Style Classifier ###
+# Embeddings
+classifier_path: "Model file path to load the style classifier"
+model_name: "Pre-trained model name in Hugging Face to load the embedding weights"
+    # Even if you load the trained style classifier,
+    # you must write the name of used pre-trained model
+    # to construct inputs for the style classifier.
+    # See details in reward_utils.py > cal_sc_loss
+get_bert_embedding: False # True if you load the new embedding weights from the pre-trained model of Hugging Face, False otherwise
+
+### BART ###
+# Model
+bart_path: "/opt/ml/saved_model/jh_thxbart_3_loss.pt"   # Model path to save the fine-tuned model
+# Data
+train_data_path: "/opt/ml/dataset/smilestyle_filtered_train.csv"
+eval_data_path: "/opt/ml/dataset/smilestyle_filtered_valid.csv"
+# Hyperparameters
+max_length: 384             # Number of max token when tokenize
+epoch : 3
+lr : 1.0e-5
+batch_size : 4
+
+### Weights & Biases ###
+wandb_project: "Weights & Biases project name. If you enter a name that does not exist, create a new project with this name."
+wandb_name: "Weights & Biases experiment name"
+wandb_entity: "Weights & Biases entity"
+wandb_group: "Weights & Biases group name"
