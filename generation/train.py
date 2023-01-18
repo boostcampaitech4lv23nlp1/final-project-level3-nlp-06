@@ -74,7 +74,7 @@ def main(config):
     epoch = config["epoch"]
 
     for e in range(epoch):
-
+        total_loss = []
         total_loss_ce = []
         total_loss_sc = []
         total_loss_co = []
@@ -105,12 +105,14 @@ def main(config):
             loss_co = cal_bl_loss(device, logits, tgt, idx, tokenizer)
             total_loss_co.append(loss_co.item())
             loss = loss_ce + loss_sc + loss_co
+            total_loss.append(loss.item())
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
 
             if i%100 == 0:
                 wandb.log({
+                    "loss": sum(total_loss)/len(total_loss),
                     "ce_loss":sum(total_loss_ce)/len(total_loss_ce),
                     "sc_loss":sum(total_loss_sc)/len(total_loss_sc),
                     "bl_loss":sum(total_loss_co)/len(total_loss_co)
