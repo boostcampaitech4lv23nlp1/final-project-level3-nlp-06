@@ -4,13 +4,13 @@ import random
 import argparse
 
 from data import Apeach_Dataset, kmhas_Dataset, KOLD_Dataset, Beep_Dataset, Unsmile_Dataset, Span_Dataset
-from model import CNNModel, VerifiableCNN, transformer
+from model import CNNModel, VerifiableCNN, transformer, SpanDetectionCNN
 from trainer import HuggingfaceTrainer, CNNTrainer
 
 
 Dataset = {"APEACH": Apeach_Dataset, "BEEP!": Beep_Dataset, "Unsmile": Unsmile_Dataset, 
            "k-mhas": kmhas_Dataset, "KOLD": KOLD_Dataset, "KOLD_SPAN": Span_Dataset}
-models = {"CNN": CNNModel, "VerifiableCNN": VerifiableCNN, "Transformer": transformer}
+models = {"CNN": CNNModel, "VerifiableCNN": VerifiableCNN, "Transformer": transformer, "SpanCNN": SpanDetectionCNN}
 trainers = {"CNN": CNNTrainer, "VerifiableCNN": CNNTrainer, "Transformer": HuggingfaceTrainer}
 
 
