@@ -74,7 +74,7 @@ def cal_sc_loss(device, logits, end_idx, classifier, tokenizer, sc_tokenizer, st
     if style == 0:
         tgt_reward = torch.ones(tgt_cls.size()).to(device) - tgt_cls * 2
     else:
-        tgt_reward = tgt_cls
+        tgt_reward = tgt_cls * 2 - torch.ones(tgt_cls.size()).to(device)
 
     loss_sc = cal_reward_loss(device, sample_probs, tgt_reward, end_idx)
 
