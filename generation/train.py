@@ -39,11 +39,11 @@ def main(config):
     tokenizer = AutoTokenizer.from_pretrained("facebook/mbart-large-50", src_lang="ko_KR", tgt_lang="ko_KR")
 
     # Load style classifier
-    classifier = CNNModel(config, tokenizer.vocab_size)
+    sc_tokenizer = AutoTokenizer.from_pretrained(config["model_name"])
+    classifier = CNNModel(config, sc_tokenizer.vocab_size)
     classifier.to(device)
     classifier.load_state_dict(torch.load(config["classifier_path"]))
     classifier.eval()
-    sc_tokenizer = AutoTokenizer.from_pretrained(config["embedding_model_name"])
 
     wandb.init(
         config=config,
