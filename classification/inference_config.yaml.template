@@ -6,5 +6,5 @@ result_dir: 결과 csv 저장할 경로(.csv)
 
 batch_size: int
 dataset: [APEACH, BEEP!, Unsmile, k-mhas, KOLD]
-model: [CNN, Transformer]
+model: ["CNN", "VerifiableCNN", "Transformer"]
 get_bert_embedding: False # False로 하는게 더 빠름.
