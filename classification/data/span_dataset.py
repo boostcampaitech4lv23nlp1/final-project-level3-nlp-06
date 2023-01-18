@@ -26,9 +26,12 @@ class Span_Dataset(Dataset):
         return self.inputs['input_ids'].shape[0]
     
     def __getitem__(self, index):
-        x = {k: v[index] for k, v in self.inputs.items()}
-        y = self.labels[index]
-        return x, y
+        return {
+            "input_ids": self.inputs['input_ids'][index],
+            "token_type_ids": self.inputs['token_type_ids'][index],
+            "attention_mask": self.inputs['attention_mask'][index],
+            "label": self.labels[index]
+        }
     
     def set_labels(self, label_type="token_classification"):
         assert label_type in ["token_classification", "index_classification"]

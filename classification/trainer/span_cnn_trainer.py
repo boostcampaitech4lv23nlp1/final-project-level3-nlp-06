@@ -32,7 +32,7 @@ class SpanCNNTrainer:
                     correct += 1
             correct /= 128
             corrects.append(correct)
-        return corrects / len(preds)
+        return sum(corrects) / len(preds)
     
     def train(self):
         wandb.init(
@@ -46,11 +46,9 @@ class SpanCNNTrainer:
         for epoch in tqdm(range(self.config["epochs"])):
             self.model.train()
             for data in self.train_loader:
-                batch_size = data['input_ids'].shape[0]
                 inputs = data['input_ids'].to('cuda')
-                mask = data['attention_mask'].to('cuda')
                 label = data['label'].to('cuda').float()
-                outputs = self.model(inputs, mask).reshape(batch_size)
+                outputs = self.model(inputs)
                 
                 loss = self.criterion(outputs, label)
                 wandb.log({"train loss": loss, "epochs": epoch})
@@ -62,12 +60,10 @@ class SpanCNNTrainer:
             preds = []
             self.model.eval()
             for data in self.valid_loader:
-                batch_size = data['input_ids'].shape[0]
                 inputs = data['input_ids'].to('cuda')
-                mask = data['attention_mask'].to('cuda')
                 label = data['label'].to('cuda').float()
                 with torch.no_grad():
-                    outputs = self.model(inputs, mask).reshape(batch_size)
+                    outputs = self.model(inputs)
                 loss = self.criterion(outputs, label)
                 valid_loss += loss
                 preds.append(outputs.cpu())
