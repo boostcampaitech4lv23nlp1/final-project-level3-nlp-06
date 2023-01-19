@@ -66,6 +66,8 @@ class SpanCNNTrainer:
             self.model.eval()
             for data in self.valid_loader:
                 data = {k: v.to('cuda') for k, v in data.items()}
+                token_label = data.pop('token_labels')
+                class_label = data.pop('class_labels').float()
                 with torch.no_grad():
                     token_output, class_output = self.model(data['input_ids'], data['attention_mask'])
                 token_loss = self.criterion1(token_output, token_label)
