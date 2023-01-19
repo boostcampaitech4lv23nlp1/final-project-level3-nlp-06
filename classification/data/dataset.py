@@ -13,7 +13,7 @@ class BASE_Dataset(Dataset):
         else:
             self.tokenizer = AutoTokenizer.from_pretrained(tokenizer_name)
         self.text = None
-        self.label = None
+        self.labels = None
         self.tokenized_sentences = None
         
     def preprocess_dataframe(self):
@@ -34,7 +34,7 @@ class BASE_Dataset(Dataset):
             "input_ids": self.tokenized_sentences['input_ids'][idx],
             "token_type_ids": self.tokenized_sentences['token_type_ids'][idx],
             "attention_mask": self.tokenized_sentences['attention_mask'][idx],
-            "label": self.label[idx]
+            "label": self.labels[idx]
         }
     
     def __len__(self):
@@ -44,7 +44,7 @@ class BASE_Dataset(Dataset):
 class Apeach_Dataset(BASE_Dataset):
     def __init__(self, csv_path, tokenizer_name):
         super(Apeach_Dataset, self).__init__(csv_path, tokenizer_name)
-        self.text, self.label = self.preprocess_dataframe(self.df)
+        self.text, self.labels = self.preprocess_dataframe(self.df)
         self.tokenized_sentences = self.encoding_sentences(self.text)
         
     def preprocess_dataframe(self, df):
@@ -57,7 +57,7 @@ class Apeach_Dataset(BASE_Dataset):
 class Beep_Dataset(BASE_Dataset):
     def __init__(self, csv_path, tokenizer_name):
         super(Beep_Dataset, self).__init__(csv_path, tokenizer_name)
-        self.text, self.label = self.preprocess_dataframe(self.df)
+        self.text, self.labels = self.preprocess_dataframe(self.df)
         self.tokenized_sentences = self.encoding_sentences(self.text)
         
     def preprocess_dataframe(self, df):
@@ -70,7 +70,7 @@ class Beep_Dataset(BASE_Dataset):
 class Unsmile_Dataset(BASE_Dataset):
     def __init__(self, csv_path, tokenizer_name):
         super(Unsmile_Dataset, self).__init__(csv_path, tokenizer_name)
-        self.text, self.label = self.preprocess_dataframe(self.df)
+        self.text, self.labels = self.preprocess_dataframe(self.df)
         self.tokenized_sentences = self.encoding_sentences(self.text)
         
     def preprocess_dataframe(self, df):
@@ -83,7 +83,7 @@ class Unsmile_Dataset(BASE_Dataset):
 class kmhas_Dataset(BASE_Dataset):
     def __init__(self, csv_path, tokenizer_name):
         super(kmhas_Dataset, self).__init__(csv_path, tokenizer_name)
-        self.text, self.label = self.preprocess_dataframe(self.df)
+        self.text, self.labels = self.preprocess_dataframe(self.df)
         self.tokenized_sentences = self.encoding_sentences(self.text)
         
     def preprocess_dataframe(self, df):
@@ -95,7 +95,7 @@ class kmhas_Dataset(BASE_Dataset):
 class KOLD_Dataset(BASE_Dataset):
     def __init__(self, csv_path, tokenizer_name):
         super(KOLD_Dataset, self).__init__(csv_path, tokenizer_name)
-        self.text, self.label = self.preprocess_dataframe(self.df)
+        self.text, self.labels = self.preprocess_dataframe(self.df)
         self.tokenized_sentences = self.encoding_sentences(self.text)
         
     def preprocess_dataframe(self, df):
