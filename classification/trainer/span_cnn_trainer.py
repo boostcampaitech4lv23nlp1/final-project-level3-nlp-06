@@ -7,6 +7,7 @@ from sklearn.metrics import f1_score
 from tqdm import tqdm
 import wandb
 import os
+from transformers import DataCollatorForTokenClassification
 
 ## TODO: CNN Trainer도 huggingface trainer로 합치기.
 class SpanCNNTrainer:
@@ -14,8 +15,10 @@ class SpanCNNTrainer:
         self.config = config
         self.model = model
         self.valid_dataset = valid_dataset
-        self.train_loader = DataLoader(train_dataset, config["batch_size"], shuffle=True)
-        self.valid_loader = DataLoader(valid_dataset, config["batch_size"])
+        data_collator = DataCollatorForTokenClassification(tokenizer=train_dataset.tokenizer)
+        
+        self.train_loader = DataLoader(train_dataset, config["batch_size"], shuffle=True, collate_fn=data_collator)
+        self.valid_loader = DataLoader(valid_dataset, config["batch_size"], collate_fn=data_collator)
         
         self.criterion = nn.BCELoss()
         self.optimizer = AdamW(self.model.parameters(), lr=config["lr"])
