@@ -3,9 +3,9 @@ import torch.nn as nn
 from transformers import AutoModel
 
 
-class SpanCNN(nn.Module):
+class SpanDetectionCNN(nn.Module):
     def __init__(self, config, vocab_size):
-        super(SpanCNN, self).__init__()
+        super(SpanDetectionCNN, self).__init__()
         
         self.config = config
         
