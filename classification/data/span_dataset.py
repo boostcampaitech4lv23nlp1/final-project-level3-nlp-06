@@ -8,7 +8,6 @@ from multiprocessing import Pool
 
 ## TODO: config로부터 max_length 받기
 ## TODO: config로부터 label_type 받기
-## TODO: multiprocessing 적용해보기
 class Span_Dataset(Dataset):
     def __init__(self, csv_path: str, tokenizer_name: str):
         self.df = pd.read_csv(csv_path)
@@ -24,6 +23,7 @@ class Span_Dataset(Dataset):
         self.label_type="token_classification"
         pool = Pool(processes=4)
         self.labels = pool.map(self.set_labels, range(len(self.df['comment'])))
+        self.class_labels = [1 if off==True else 0 for off in self.df['OFF']]
         
     def __len__(self):
         return self.inputs['input_ids'].shape[0]
@@ -33,7 +33,8 @@ class Span_Dataset(Dataset):
             "input_ids": self.inputs['input_ids'][index],
             "token_type_ids": self.inputs['token_type_ids'][index],
             "attention_mask": self.inputs['attention_mask'][index],
-            "labels": self.labels[index]
+            "labels": self.labels[index],
+            "class_label": self.class_labels[index]
         }
     
     def set_labels(self, target_idx):
