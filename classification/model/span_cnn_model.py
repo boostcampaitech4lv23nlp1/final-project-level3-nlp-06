@@ -17,8 +17,8 @@ class SpanDetectionCNN(nn.Module):
             nn.ReLU(),
             nn.Dropout(0.2),
             nn.Conv1d(128, 2, kernel_size=3, padding=1),
-            nn.Softmax(),
         )
+        self.softmax = nn.Softmax(dim=-1)
         
     def prepare_embeddings(self):
         transformer = AutoModel.from_pretrained(self.config["model_name"])
@@ -31,5 +31,7 @@ class SpanDetectionCNN(nn.Module):
     def forward(self, inputs):
         x = self.Embedding(inputs)
         x = x.transpose(1, 2)
-        return self.Layer(x).squeeze(1)
+        x = self.Layer(x)
+        x.transpose(1, 2)
+        return self.softmax(x)
     
