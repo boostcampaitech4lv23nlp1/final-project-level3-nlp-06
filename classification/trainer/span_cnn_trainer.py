@@ -2,9 +2,10 @@ from torch.utils.data import DataLoader
 from torch.optim import AdamW
 import torch.nn as nn
 import torch
-from sklearn.metrics import f1_score
+from sklearn.metrics import accuracy_score
 
 from tqdm import tqdm
+import numpy as np
 import wandb
 import os
 from transformers import DataCollatorForTokenClassification
@@ -24,18 +25,6 @@ class SpanCNNTrainer:
         self.optimizer = AdamW(self.model.parameters(), lr=config["lr"])
         self.best_model = None
         self.best_f1 = 0
-        
-    def get_accuracy(self, preds, labels):
-        corrects = []
-        for label, pred in zip(labels, preds):
-            correct = 0
-            for l, p in zip(label, pred):
-                l = 1 if l > 0.5 else 0
-                if l == p:
-                    correct += 1
-            correct /= 128
-            corrects.append(correct)
-        return sum(corrects) / len(preds)
     
     def train(self):
         wandb.init(
@@ -50,7 +39,7 @@ class SpanCNNTrainer:
             self.model.train()
             for data in self.train_loader:
                 inputs = data['input_ids'].to('cuda')
-                label = data['labels'].to('cuda').float()
+                label = data['labels'].to('cuda')
                 outputs = self.model(inputs)
                 
                 loss = self.criterion(outputs, label)
@@ -64,7 +53,7 @@ class SpanCNNTrainer:
             self.model.eval()
             for data in self.valid_loader:
                 inputs = data['input_ids'].to('cuda')
-                label = data['labels'].to('cuda').float()
+                label = data['labels'].to('cuda')
                 with torch.no_grad():
                     outputs = self.model(inputs)
                 loss = self.criterion(outputs, label)
@@ -72,7 +61,7 @@ class SpanCNNTrainer:
                 preds.append(outputs.cpu())
                 
             preds = torch.cat(preds, dim=0)
-            acc = self.get_accuracy(preds, self.valid_dataset.labels)
+            acc = self.compute_metrics(preds, self.valid_dataset.labels)
             wandb.log({"valid loss": valid_loss/len(self.valid_loader), "Accuracy": acc})
             
             if acc > self.best_f1:
@@ -83,3 +72,20 @@ class SpanCNNTrainer:
         best_model_path = os.path.join(self.config["checkpoint_dir"], "pytorch_model.bin")
         torch.save(self.best_model, best_model_path)
         
+    def compute_metrics(self, predictions, labels):
+        predictions = np.argmax(predictions, axis=2)
+        
+        true_predictions = [
+            [p.item() for (p, l) in zip(prediction, label) if l != -100]
+            for prediction, label in zip(predictions, labels)
+        ]
+        true_labels = [
+            [l for (p, l) in zip(prediction, label) if l != -100]
+            for prediction, label in zip(predictions, labels)
+        ]
+
+        acc = 0
+        for pred, label in zip(true_predictions, true_labels):
+            acc += accuracy_score(pred, label)
+            
+        return acc / len(labels)
