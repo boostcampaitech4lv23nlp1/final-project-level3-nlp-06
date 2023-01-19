@@ -1,5 +1,6 @@
 from transformers import TrainingArguments, Trainer, DataCollatorForTokenClassification
-from sklearn.metrics import f1_score
+from sklearn.metrics import f1_score, accuracy_score
+import numpy as np
 import wandb
 
 
@@ -7,6 +8,26 @@ class HuggingfaceTrainer:
     def __init__(self, config, model, train_dataset, valid_dataset):
         self.config = config
         self.labels = valid_dataset.label
+        def compute_metrics(p):
+            predictions, labels = p
+            predictions = np.argmax(predictions, axis=2)
+            
+            true_predictions = [
+                [p.item() for (p, l) in zip(prediction, label) if l != -100]
+                for prediction, label in zip(predictions, labels)
+            ]
+            true_labels = [
+                [l for (p, l) in zip(prediction, label) if l != -100]
+                for prediction, label in zip(predictions, labels)
+            ]
+
+            acc = 0
+            for pred, label in zip(true_predictions, true_labels):
+                acc += accuracy_score(pred, label)
+                
+            return {
+                "accuracy": acc / len(labels)
+            }
 
         training_args = TrainingArguments(
             output_dir=config["checkpoint_dir"],
@@ -33,9 +54,8 @@ class HuggingfaceTrainer:
                 args=training_args,
                 train_dataset=train_dataset,
                 eval_dataset=valid_dataset,
-                data_collator=data_collator
-                ## TODO: calculate f1 score
-                # compute_metrics=self.calc_f1_score
+                data_collator=data_collator,
+                compute_metrics=compute_metrics
             )
         else:
             self.trainer = Trainer(
