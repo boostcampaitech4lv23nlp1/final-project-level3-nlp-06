@@ -21,12 +21,26 @@ class HuggingfaceTrainer:
                 for prediction, label in zip(predictions, labels)
             ]
 
-            acc = 0
+            n_cnt = 0
+            p_cnt = 0
+
+            n_cor = 0
+            p_cor = 0
+
             for pred, label in zip(true_predictions, true_labels):
-                acc += accuracy_score(pred, label)
-                
+                for p, l in zip(pred, label):
+                    if l == 0:
+                        p_cnt += 1
+                        if p == l:
+                            p_cor += 1
+                    else:
+                        n_cnt += 1
+                        if p == l:
+                            n_cor += 1
             return {
-                "accuracy": acc / len(labels)
+                "Accuracy": (n_cor+p_cor)/(n_cnt+p_cnt),
+                "hate token accuracy": n_cor/n_cnt,
+                "none hate token accuracy": p_cor/p_cnt
             }
 
         training_args = TrainingArguments(
