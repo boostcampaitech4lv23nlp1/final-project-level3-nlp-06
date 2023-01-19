@@ -1,4 +1,4 @@
-from transformers import TrainingArguments, Trainer
+from transformers import TrainingArguments, Trainer, DataCollatorForTokenClassification
 from sklearn.metrics import f1_score
 import wandb
 
@@ -25,15 +25,27 @@ class HuggingfaceTrainer:
             load_best_model_at_end=True,
             report_to='wandb',
         )
-
-        self.trainer = Trainer(
-            model=model,
-            args=training_args,
-            train_dataset=train_dataset,
-            eval_dataset=valid_dataset,
-            ## TODO: calculate f1 score
-            # compute_metrics=self.calc_f1_score
-        )
+        
+        if self.config["model"]=="SpanTransformer":
+            data_collator = DataCollatorForTokenClassification(tokenizer=train_dataset.tokenizer)
+            self.trainer = Trainer(
+                model=model,
+                args=training_args,
+                train_dataset=train_dataset,
+                eval_dataset=valid_dataset,
+                data_collator=data_collator
+                ## TODO: calculate f1 score
+                # compute_metrics=self.calc_f1_score
+            )
+        else:
+            self.trainer = Trainer(
+                model=model,
+                args=training_args,
+                train_dataset=train_dataset,
+                eval_dataset=valid_dataset,
+                ## TODO: calculate f1 score
+                # compute_metrics=self.calc_f1_score
+            )
         
     def calc_f1_score(self, preds):
         return f1_score(self.labels, preds, average="micro") * 100.0
