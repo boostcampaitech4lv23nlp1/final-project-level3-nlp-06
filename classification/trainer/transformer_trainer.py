@@ -44,8 +44,16 @@ class HuggingfaceTrainer:
                 train_dataset=train_dataset,
                 eval_dataset=valid_dataset,
                 ## TODO: calculate f1 score
-                # compute_metrics=self.calc_f1_score
+                compute_metrics=self.calc_f1_score
             )
+            
+    def calc_f1_score(self, p):
+        predictions, labels = p
+        preds = [1 if pred > 0.5 else 0 for pred in predictions]
+        f1 = f1_score(preds, labels)
+        return {
+            "accuracy": f1
+        }
         
     def compute_metrics(self, p):
         predictions, labels = p
