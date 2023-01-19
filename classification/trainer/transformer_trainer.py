@@ -7,7 +7,7 @@ import wandb
 class HuggingfaceTrainer:
     def __init__(self, config, model, train_dataset, valid_dataset):
         self.config = config
-        self.labels = valid_dataset.label
+        self.labels = valid_dataset.labels
         def compute_metrics(p):
             predictions, labels = p
             predictions = np.argmax(predictions, axis=2)
