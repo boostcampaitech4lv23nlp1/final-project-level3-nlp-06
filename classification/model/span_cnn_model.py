@@ -16,10 +16,8 @@ class SpanDetectionCNN(nn.Module):
             nn.Conv1d(768, 128, kernel_size=3, padding=1),
             nn.ReLU(),
             nn.Dropout(0.2),
-            nn.Conv1d(128, 1, kernel_size=3, padding=1),
-            nn.ReLU(),
-            nn.Dropout(0.2),
-            nn.Sigmoid()
+            nn.Conv1d(128, 2, kernel_size=3, padding=1),
+            nn.Softmax(),
         )
         
     def prepare_embeddings(self):

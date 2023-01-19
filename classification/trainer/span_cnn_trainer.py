@@ -20,7 +20,7 @@ class SpanCNNTrainer:
         self.train_loader = DataLoader(train_dataset, config["batch_size"], shuffle=True, collate_fn=data_collator)
         self.valid_loader = DataLoader(valid_dataset, config["batch_size"], collate_fn=data_collator)
         
-        self.criterion = nn.BCELoss()
+        self.criterion = nn.CrossEntropyLoss(ignore_index=-100)
         self.optimizer = AdamW(self.model.parameters(), lr=config["lr"])
         self.best_model = None
         self.best_f1 = 0
@@ -50,7 +50,7 @@ class SpanCNNTrainer:
             self.model.train()
             for data in self.train_loader:
                 inputs = data['input_ids'].to('cuda')
-                label = data['label'].to('cuda').float()
+                label = data['labels'].to('cuda').float()
                 outputs = self.model(inputs)
                 
                 loss = self.criterion(outputs, label)
@@ -64,7 +64,7 @@ class SpanCNNTrainer:
             self.model.eval()
             for data in self.valid_loader:
                 inputs = data['input_ids'].to('cuda')
-                label = data['label'].to('cuda').float()
+                label = data['labels'].to('cuda').float()
                 with torch.no_grad():
                     outputs = self.model(inputs)
                 loss = self.criterion(outputs, label)
