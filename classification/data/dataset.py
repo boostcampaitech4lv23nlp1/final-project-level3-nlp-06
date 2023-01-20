@@ -34,7 +34,7 @@ class BASE_Dataset(Dataset):
             "input_ids": self.tokenized_sentences['input_ids'][idx],
             "token_type_ids": self.tokenized_sentences['token_type_ids'][idx],
             "attention_mask": self.tokenized_sentences['attention_mask'][idx],
-            "label": self.labels[idx]
+            "label": float(self.labels[idx])
         }
     
     def __len__(self):
