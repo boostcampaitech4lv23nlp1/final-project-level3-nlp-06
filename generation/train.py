@@ -35,6 +35,8 @@ def main(config):
 
     # Load BART
     model = MBartForConditionalGeneration.from_pretrained("facebook/mbart-large-50")
+    if config["model_load"]:
+        model.load_state_dict(torch.load(config["model_load_path"]))
     model.to(device)
     tokenizer = AutoTokenizer.from_pretrained("facebook/mbart-large-50", src_lang="ko_KR", tgt_lang="ko_KR")
 
