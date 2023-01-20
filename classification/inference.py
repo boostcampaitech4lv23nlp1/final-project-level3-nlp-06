@@ -7,12 +7,12 @@ from tqdm import tqdm
 from sklearn.metrics import f1_score
 
 from data import Apeach_Dataset, kmhas_Dataset, KOLD_Dataset, Beep_Dataset, Unsmile_Dataset, Span_Dataset
-from model import CNNModel, transformer, SpanDetectionCNN
+from model import CNNModel, transformer
 
 
 Dataset = {"APEACH": Apeach_Dataset, "BEEP!": Beep_Dataset, "Unsmile": Unsmile_Dataset, 
            "k-mhas": kmhas_Dataset, "KOLD": KOLD_Dataset, "KOLD_SPAN": Span_Dataset}
-models = {"CNN": CNNModel, "Transformer": transformer, "SpanCNN": SpanDetectionCNN}
+models = {"CNN": CNNModel, "Transformer": transformer}
 
 def main(config):
     valid_dataset = Dataset[config["dataset"]](config["valid_dir"], config["model_name"])

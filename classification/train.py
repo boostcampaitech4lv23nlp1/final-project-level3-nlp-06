@@ -4,16 +4,16 @@ import random
 import argparse
 
 from data import Apeach_Dataset, kmhas_Dataset, KOLD_Dataset, Beep_Dataset, Unsmile_Dataset, Span_Dataset
-from model import CNNModel, VerifiableCNN, SpanDetectionCNN, transformer, span_transformer
-from trainer import HuggingfaceTrainer, CNNTrainer, SpanCNNTrainer
+from model import CNNModel, VerifiableCNN, transformer, span_transformer
+from trainer import HuggingfaceTrainer, CNNTrainer
 
 
 Dataset = {"APEACH": Apeach_Dataset, "BEEP!": Beep_Dataset, "Unsmile": Unsmile_Dataset, 
            "k-mhas": kmhas_Dataset, "KOLD": KOLD_Dataset, "KOLD_SPAN": Span_Dataset}
 models = {"CNN": CNNModel, "VerifiableCNN": VerifiableCNN, "Transformer": transformer, 
-          "SpanCNN": SpanDetectionCNN, "SpanTransformer": span_transformer}
+          "SpanTransformer": span_transformer}
 trainers = {"CNN": CNNTrainer, "VerifiableCNN": CNNTrainer, "Transformer": HuggingfaceTrainer, 
-            "SpanCNN": SpanCNNTrainer, "SpanTransformer": HuggingfaceTrainer}
+            "SpanTransformer": HuggingfaceTrainer}
 
 
 def set_seed(random_seed):
