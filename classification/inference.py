@@ -34,11 +34,11 @@ def main(config):
                 outputs = model(**data).logits
         preds += [1 if output.item() > 0.5 else 0 for output in outputs.cpu()]
         
-    f1 = f1_score(preds, valid_dataset.label)
+    f1 = f1_score(preds, valid_dataset.labels)
     print("f1 score :", f1)
     df = {
         "sentence": valid_dataset.text,
-        "label": valid_dataset.label,
+        "label": valid_dataset.labels,
         "preds": preds
     }
     pd.DataFrame.from_dict(df).to_csv(config["result_dir"], index=False)
