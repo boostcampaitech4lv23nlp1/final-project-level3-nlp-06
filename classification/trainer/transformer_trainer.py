@@ -43,7 +43,6 @@ class HuggingfaceTrainer:
                 args=training_args,
                 train_dataset=train_dataset,
                 eval_dataset=valid_dataset,
-                ## TODO: calculate f1 score
                 compute_metrics=self.calc_f1_score
             )
             
