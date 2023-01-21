@@ -6,11 +6,12 @@ import pandas as pd
 from tqdm import tqdm
 from sklearn.metrics import f1_score
 
-from data import Apeach_Dataset, kmhas_Dataset, KOLD_Dataset, Unsmile_Dataset, Beep_Dataset
+from data import Apeach_Dataset, kmhas_Dataset, KOLD_Dataset, Beep_Dataset, Unsmile_Dataset, Span_Dataset
 from model import CNNModel, transformer
 
 
-Dataset = {"APEACH": Apeach_Dataset, "BEEP!": Beep_Dataset, "Unsmile": Unsmile_Dataset, "k-mhas": kmhas_Dataset, "KOLD": KOLD_Dataset}
+Dataset = {"APEACH": Apeach_Dataset, "BEEP!": Beep_Dataset, "Unsmile": Unsmile_Dataset, 
+           "k-mhas": kmhas_Dataset, "KOLD": KOLD_Dataset, "KOLD_SPAN": Span_Dataset}
 models = {"CNN": CNNModel, "Transformer": transformer}
 
 def main(config):
@@ -33,11 +34,11 @@ def main(config):
                 outputs = model(**data).logits
         preds += [1 if output.item() > 0.5 else 0 for output in outputs.cpu()]
         
-    f1 = f1_score(preds, valid_dataset.label)
+    f1 = f1_score(preds, valid_dataset.labels)
     print("f1 score :", f1)
     df = {
         "sentence": valid_dataset.text,
-        "label": valid_dataset.label,
+        "label": valid_dataset.labels,
         "preds": preds
     }
     pd.DataFrame.from_dict(df).to_csv(config["result_dir"], index=False)
