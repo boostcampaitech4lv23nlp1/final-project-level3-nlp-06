@@ -4,7 +4,7 @@ import yaml
 import argparse
 import pandas as pd
 from tqdm import tqdm
-from sklearn.metrics import f1_score
+from sklearn.metrics import f1_score, precision_score, recall_score
 
 from data import Apeach_Dataset, kmhas_Dataset, KOLD_Dataset, Beep_Dataset, Unsmile_Dataset, Span_Dataset
 from model import CNNModel, transformer
@@ -35,7 +35,11 @@ def main(config):
         preds += [1 if output.item() > 0.5 else 0 for output in outputs.cpu()]
         
     f1 = f1_score(preds, valid_dataset.labels)
+    precision = precision_score(preds, valid_dataset.labels)
+    recall = recall_score(preds, valid_dataset.labels)
     print("f1 score :", f1)
+    print("precision :", precision)
+    print("recall :", recall)
     df = {
         "sentence": valid_dataset.text,
         "label": valid_dataset.labels,
