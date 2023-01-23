@@ -3,14 +3,17 @@ import torch
 import random
 import argparse
 
-from data import Apeach_Dataset, kmhas_Dataset, KOLD_Dataset, Beep_Dataset, Unsmile_Dataset
-from model import CNNModel, VerifiableCNN, transformer
+from data import Apeach_Dataset, kmhas_Dataset, KOLD_Dataset, Beep_Dataset, Unsmile_Dataset, Span_Dataset
+from model import CNNModel, VerifiableCNN, transformer, span_transformer
 from trainer import HuggingfaceTrainer, CNNTrainer
 
 
-Dataset = {"APEACH": Apeach_Dataset, "BEEP!": Beep_Dataset, "Unsmile": Unsmile_Dataset, "k-mhas": kmhas_Dataset, "KOLD": KOLD_Dataset}
-models = {"CNN": CNNModel, "VerifiableCNN": VerifiableCNN, "Transformer": transformer}
-trainers = {"CNN": CNNTrainer, "VerifiableCNN": CNNTrainer, "Transformer": HuggingfaceTrainer}
+Dataset = {"APEACH": Apeach_Dataset, "BEEP!": Beep_Dataset, "Unsmile": Unsmile_Dataset, 
+           "k-mhas": kmhas_Dataset, "KOLD": KOLD_Dataset, "KOLD_SPAN": Span_Dataset}
+models = {"CNN": CNNModel, "VerifiableCNN": VerifiableCNN, "Transformer": transformer, 
+          "SpanTransformer": span_transformer}
+trainers = {"CNN": CNNTrainer, "VerifiableCNN": CNNTrainer, "Transformer": HuggingfaceTrainer, 
+            "SpanTransformer": HuggingfaceTrainer}
 
 
 def set_seed(random_seed):
