@@ -15,7 +15,7 @@ def span_transformer(config, vocab_size=None):
     )
     
 class Token_Sequence_transformer(nn.Module):
-    def __init__(self, config):
+    def __init__(self, config, vocab_size=None):
         super(Token_Sequence_transformer, self).__init__()
         self.transformer = AutoModel.from_pretrained(config["model_name"])
         self.sequence_classification = nn.Linear(256, 1)
