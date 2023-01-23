@@ -9,8 +9,8 @@ from tqdm import tqdm
 import wandb
 import os
 
-## TODO: CNN Trainer도 huggingface trainer로 합치기.
-class CNNTrainer:
+
+class TokenSequenceTrainer:
     def __init__(self, config, model, train_dataset, valid_dataset) -> None:
         self.config = config
         self.model = model
