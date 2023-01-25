@@ -19,7 +19,7 @@ class TokenSequenceTrainer:
         self.train_loader = DataLoader(train_dataset, config["batch_size"], shuffle=True, collate_fn=data_collator)
         self.valid_loader = DataLoader(valid_dataset, config["batch_size"], collate_fn=data_collator)
         
-        self.seq_criterion = nn.BCELoss()
+        self.seq_criterion = nn.MultiLabelSoftMarginLoss()
         self.token_criterion = nn.CrossEntropyLoss(ignore_index=-100)
         
         self.optimizer = AdamW(self.model.parameters(), lr=config["lr"])
@@ -53,7 +53,7 @@ class TokenSequenceTrainer:
                 token_output, seq_output = self.model(**data)
                 
                 token_loss = self.token_criterion(token_output.transpose(1, 2), token_label)
-                seq_loss = self.seq_criterion(seq_output.squeeze(), seq_label.float())
+                seq_loss = self.seq_criterion(seq_output, seq_label)
                 total_loss = token_loss + seq_loss
                 
                 wandb.log({"token loss": token_loss, "sequence loss": seq_loss, "epochs": epoch})
@@ -69,12 +69,12 @@ class TokenSequenceTrainer:
             self.model.eval()
             for data in self.valid_loader:
                 data = {k: v.to('cuda') for k, v in data.items()}
-                seq_label = data.pop('class_label').float()
+                seq_label = data.pop('class_label')
                 token_label = data.pop('labels')
                 with torch.no_grad():
                     token_output, seq_output = self.model(**data)
                 token_loss = self.token_criterion(token_output.transpose(1, 2), token_label)
-                seq_loss = self.seq_criterion(seq_output.squeeze(), seq_label.float())
+                seq_loss = self.seq_criterion(seq_output, seq_label)
                 valid_loss += token_loss + seq_loss
                 
                 seq_preds += [1 if output.item() > 0.5 else 0 for output in seq_output.cpu()]
