@@ -47,7 +47,7 @@ class TokenSequenceTrainer:
             self.model.train()
             for data in self.train_loader:
                 data = {k: v.to('cuda') for k, v in data.items()}
-                seq_label = data.pop('class_label')
+                seq_label = data.pop('class_labels')
                 token_label = data.pop('labels')
                 
                 token_output, seq_output = self.model(**data)
@@ -69,7 +69,7 @@ class TokenSequenceTrainer:
             self.model.eval()
             for data in self.valid_loader:
                 data = {k: v.to('cuda') for k, v in data.items()}
-                seq_label = data.pop('class_label')
+                seq_label = data.pop('class_labels')
                 token_label = data.pop('labels')
                 with torch.no_grad():
                     token_output, seq_output = self.model(**data)
