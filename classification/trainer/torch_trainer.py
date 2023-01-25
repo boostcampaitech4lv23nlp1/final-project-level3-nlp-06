@@ -77,12 +77,13 @@ class TokenSequenceTrainer:
                 seq_loss = self.seq_criterion(seq_output, seq_label)
                 valid_loss += token_loss + seq_loss
                 
-                seq_preds += [1 if output.item() > 0.5 else 0 for output in seq_output.cpu()]
+                seq_preds.append(seq_output.cpu())
                 token_preds.append(torch.argmax(token_output, dim=-1).cpu())
             
+            seq_preds = torch.cat(seq_preds, dim=0)
             token_preds = torch.cat(token_preds, dim=0)
-            f1 = f1_score(seq_preds, self.valid_dataset.class_labels)
-            metric = compute_metrics(token_preds, self.valid_dataset.labels)
+            f1 = compute_multi_label_f1(seq_preds, self.valid_dataset.class_labels)
+            metric = compute_token_metrics(token_preds, self.valid_dataset.labels)
             metric["f1 score"] = f1
             metric["valid loss"] = valid_loss/len(self.valid_loader)
             wandb.log(metric)
@@ -94,7 +95,15 @@ class TokenSequenceTrainer:
         best_model_path = os.path.join(self.config["checkpoint_dir"], "pytorch_model.bin")
         torch.save(self.best_model, best_model_path)
         
-def compute_metrics(predictions, labels):
+def compute_multi_label_f1(preds, labels):
+    preds = torch.sigmoid(preds)
+    rpreds = []
+    for pred in preds:
+        rpreds.append([1 if output > 0.5 else 0 for output in pred])
+    f1 = f1_score(labels, preds, average="macro")
+    return f1
+        
+def compute_token_metrics(predictions, labels):
     true_predictions = [
         [p.item() for (p, l) in zip(prediction, label) if l != -100]
         for prediction, label in zip(predictions, labels)
