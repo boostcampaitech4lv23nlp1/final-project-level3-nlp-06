@@ -100,7 +100,7 @@ def compute_multi_label_f1(preds, labels):
     rpreds = []
     for pred in preds:
         rpreds.append([1 if output > 0.5 else 0 for output in pred])
-    f1 = f1_score(labels, preds, average="macro")
+    f1 = f1_score(labels, rpreds, average="macro")
     return f1
         
 def compute_token_metrics(predictions, labels):
