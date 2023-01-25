@@ -18,9 +18,8 @@ class Token_Sequence_transformer(nn.Module):
     def __init__(self, config, vocab_size=None):
         super(Token_Sequence_transformer, self).__init__()
         self.transformer = AutoModel.from_pretrained(config["model_name"])
-        self.sequence_classification = nn.Linear(256, 1)
+        self.sequence_classification = nn.Linear(256, 9)
         self.token_classification = nn.Linear(256, 2)
-        self.sigmoid = nn.Sigmoid()
         
     def forward(self, input_ids, attention_mask, token_type_ids):
         hidden_states = self.transformer(input_ids, attention_mask, token_type_ids).last_hidden_state
@@ -29,7 +28,6 @@ class Token_Sequence_transformer(nn.Module):
         
         cls_output = hidden_states[:, 0, :]
         sequence_output = self.sequence_classification(cls_output)
-        sequence_output = self.sigmoid(sequence_output)
         
         return token_output, sequence_output
     
