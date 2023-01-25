@@ -8,14 +8,17 @@ from torch.utils.data import Dataset, DataLoader
 from transformers import (
     AutoTokenizer,
     MBartForConditionalGeneration,
-    is_torch_available
+    is_torch_available,
+    T5ForConditionalGeneration,
+    T5Tokenizer
+
 )
 sys.path.append("..")
 from tqdm import tqdm
 import wandb
 import yaml
 from reward_util import cal_bl_loss, cal_sc_loss
-from dataset import ParallelDatasetForMBart, collate_fn
+from dataset import ParallelDatasetForMBart,ParallelDatasetForT5, collate_fn
 from classification.model.cnn_model import CNNModel
 import random
 
@@ -34,11 +37,19 @@ def main(config):
     device = "cuda" if torch.cuda.is_available() else "cpu"
 
     # Load BART
-    model = MBartForConditionalGeneration.from_pretrained("facebook/mbart-large-50")
-    if config["model_load"]:
-        model.load_state_dict(torch.load(config["model_load_path"]))
-    model.to(device)
-    tokenizer = AutoTokenizer.from_pretrained("facebook/mbart-large-50", src_lang="ko_KR", tgt_lang="ko_KR")
+    if config["KcT5"]:
+        model = T5ForConditionalGeneration.from_pretrained("beomi/KcT5-dev",from_flax=True)
+        if config["model_load"]:
+            model.load_state_dict(torch.load(config["model_load_path"]))
+        model.to(device)
+        tokenizer = AutoTokenizer.from_pretrained("beomi/KcT5-dev")
+    else:
+        model = MBartForConditionalGeneration.from_pretrained("facebook/mbart-large-50")
+        if config["model_load"]:
+            model.load_state_dict(torch.load(config["model_load_path"]))
+        model.to(device)
+        tokenizer = AutoTokenizer.from_pretrained("facebook/mbart-large-50", src_lang="ko_KR", tgt_lang="ko_KR")
+
 
     # Load style classifier
     sc_tokenizer = AutoTokenizer.from_pretrained(config["model_name"])
@@ -54,9 +65,12 @@ def main(config):
         group=config["wandb_group"],
         name=config["wandb_name"],
     )
-
-    train_dataset = ParallelDatasetForMBart(config, tokenizer)
-    eval_dataset = ParallelDatasetForMBart(config, tokenizer, eval=True)
+    if config["KcT5"]:
+        train_dataset = ParallelDatasetForT5(config, tokenizer)
+        eval_dataset = ParallelDatasetForT5(config, tokenizer, eval=True)
+    else:
+        train_dataset = ParallelDatasetForMBart(config, tokenizer)
+        eval_dataset = ParallelDatasetForMBart(config, tokenizer, eval=True)
 
     train_loader = DataLoader(
         train_dataset, 

@@ -11,6 +11,7 @@ get_bert_embedding: False # True if you load the new embedding weights from the 
 ### BART ###
 # Model
 bart_path: "/opt/ml/saved_model/jh_thxbart_3_loss.pt"   # Model path to save the fine-tuned model
+KcT5: True                                              # If you want to use KcT5, True
 #Load
 model_load: True
 model_load_path: "/opt/ml/final/finalproject/generation/results/thxbart_3_offensive_prompt.pt"
