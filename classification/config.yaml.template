@@ -6,18 +6,15 @@ wandb_name: wandb 실험 이름(str)
 wandb_group: wandb 그룹 이름(str)
 checkpoint_dir: wandb checkpoint 저장 경로
 
+dataset: dataset 종류 (str) ["APEACH", "BEEP!", "Unsmile", "k-mhas", "KOLD", "KOLD_SPAN]
 train_dir: 훈련셋 csv 경로(str)
 valid_dir: 평가셋 csv 경로(str)
 
-model: 모델 유형 ["CNN", "Transformer"]
-# model type이 'CNN'일 때만 사용됨.
-get_bert_embedding: True
-
-num_labels: 1
-dataset: dataset 종류 (str) ["APEACH", "BEEP!", "Unsmile", "k-mhas", "KOLD"]
+model: 모델 유형 ["CNN", "VerifiableCNN", "Transformer", "SpanTransformer", "TokenSequenceTransformer"]
 
 batch_size: (int)
 epochs: (int)
 lr: 5e-5 (float)
+
 save_step: 300(int)
 eval_step: 300(int)
