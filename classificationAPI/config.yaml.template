@@ -1,0 +1,5 @@
+model_name: "beomi/KcELECTRA-small-v2022"
+sequence_model: "model_saved/k-mhas"
+token_model: "model_saved/TokenSequence/pytorch_model.bin"
+device: "cuda" # 'cpu'
+hate_threshold: 0.6
