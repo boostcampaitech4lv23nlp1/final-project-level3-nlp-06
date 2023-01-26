@@ -10,11 +10,7 @@ dataset: dataset 종류 (str) ["APEACH", "BEEP!", "Unsmile", "k-mhas", "KOLD", "
 train_dir: 훈련셋 csv 경로(str)
 valid_dir: 평가셋 csv 경로(str)
 
-model: 모델 유형 ["CNN", "VerifiableCNN", "Transformer", "SpanTransformer"]
-## TODO: 아래 2개 항목은 삭제될 예정.
-# model type이 'CNN'일 때만 사용됨.
-get_bert_embedding: True
-embedding: pretrain된 임베딩 레이어 저장 경로(.pt)
+model: 모델 유형 ["CNN", "VerifiableCNN", "Transformer", "SpanTransformer", "TokenSequenceTransformer"]
 
 batch_size: (int)
 epochs: (int)

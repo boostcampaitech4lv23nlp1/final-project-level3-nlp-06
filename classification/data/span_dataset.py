@@ -6,8 +6,6 @@ from transformers import AutoTokenizer
 from multiprocessing import Pool
 
 
-## TODO: config로부터 max_length 받기
-## TODO: config로부터 label_type 받기
 class Span_Dataset(Dataset):
     def __init__(self, csv_path: str, tokenizer_name: str):
         self.df = pd.read_csv(csv_path)
@@ -20,10 +18,9 @@ class Span_Dataset(Dataset):
             return_offsets_mapping=True, 
             return_tensors="pt"
         )
-        self.label_type="token_classification"
+
         pool = Pool(processes=4)
         self.labels = pool.map(self.set_labels, range(len(self.df['comment'])))
-        self.class_labels = [1 if off==True else 0 for off in self.df['OFF']]
         
     def __len__(self):
         return self.inputs['input_ids'].shape[0]
@@ -34,7 +31,6 @@ class Span_Dataset(Dataset):
             "token_type_ids": self.inputs['token_type_ids'][index],
             "attention_mask": self.inputs['attention_mask'][index],
             "labels": self.labels[index],
-            "class_label": self.class_labels[index]
         }
     
     def set_labels(self, target_idx):
@@ -54,16 +50,39 @@ class Span_Dataset(Dataset):
                     end_token_idx = i
             span_ranges.append((start_token_idx, end_token_idx))
             
-        if self.label_type == "token_classification":
-            # For Token classification:
-            label = torch.tensor([-100 for _ in range(self.max_length)])
-            label[1:sum(self.inputs['attention_mask'][target_idx]).item()-1] = 0
-            for s, e in span_ranges:
-                label[s:e+1] = 1
-        elif self.label_type == "index_classification":
-            # For span index classification:
-            start_label = [span[0] for span in span_ranges]
-            end_label = [span[1] for span in span_ranges]
+        # For Token classification:
+        label = torch.tensor([-100 for _ in range(self.max_length)])
+        label[1:sum(self.inputs['attention_mask'][target_idx]).item()-1] = 0
+        for s, e in span_ranges:
+            label[s:e+1] = 1
 
         return label.tolist()
+    
+class Sequence_Span_Dataset(Span_Dataset):
+    def __init__(self, csv_path: str, tokenizer_name: str):
+        super(Sequence_Span_Dataset, self).__init__(csv_path, tokenizer_name)
+        self.class_labels = self.set_multi_label()
+        
+    def set_multi_label(self):
+        keys = [
+            'individual', 'untargeted', 'others', 'gender',
+            'race', 'politics', 'other', 'religion', 'sexual_orientation'
+        ]
+        labels = []
+        for i in range(len(self.df)):
+            line = self.df.iloc[i]
+            multi_label = []
+            for key in keys:
+                multi_label.append(line[key])
+            labels.append(multi_label)
+        return labels
+    
+    def __getitem__(self, index):
+        return {
+            "input_ids": self.inputs['input_ids'][index],
+            "token_type_ids": self.inputs['token_type_ids'][index],
+            "attention_mask": self.inputs['attention_mask'][index],
+            "labels": self.labels[index],
+            "class_labels": self.class_labels[index]
+        }
     

@@ -7,4 +7,3 @@ result_dir: 결과 csv 저장할 경로(.csv)
 batch_size: int
 dataset: ["APEACH", "BEEP!", "Unsmile", "k-mhas", "KOLD", "KOLD_SPAN"]
 model: ["CNN", "VerifiableCNN", "Transformer", "SpanTransformer"]
-get_bert_embedding: False # 고정값.
