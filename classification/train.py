@@ -12,7 +12,7 @@ Dataset = {"APEACH": Apeach_Dataset, "BEEP!": Beep_Dataset, "Unsmile": Unsmile_D
            "k-mhas": kmhas_Dataset, "KOLD": KOLD_Dataset, "KOLD_SPAN": Span_Dataset, "KOLD_Sequence_SPAN": Sequence_Span_Dataset}
 models = {"CNN": CNNModel, "VerifiableCNN": VerifiableCNN, "Transformer": transformer, "multilabelTransformer": multi_label_transformer,
           "SpanTransformer": span_transformer, "TokenSequenceTransformer": Token_Sequence_transformer}
-trainers = {"CNN": CNNTrainer, "VerifiableCNN": CNNTrainer, "Transformer": HuggingfaceTrainer, 
+trainers = {"CNN": CNNTrainer, "VerifiableCNN": CNNTrainer, "Transformer": HuggingfaceTrainer, "multilabelTransformer": HuggingfaceTrainer,
             "SpanTransformer": HuggingfaceTrainer, "TokenSequenceTransformer": TokenSequenceTrainer}
 
 
