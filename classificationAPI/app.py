@@ -21,6 +21,6 @@ async def classifying(request: Request, comments: str):
     }
     return result
 
-if __name__=="__main__":
-    uvicorn.run(app, host="0.0.0.0", port=30001)
+# if __name__=="__main__":
+#     uvicorn.run(app, host="0.0.0.0", port=30001)
     
