@@ -92,6 +92,28 @@ class kmhas_Dataset(BASE_Dataset):
         return text, labels
     
     
+class kmhas_multilabel_Dataset(BASE_Dataset):
+    def __init__(self, csv_path, tokenizer_name):
+        super(kmhas_Dataset, self).__init__(csv_path, tokenizer_name)
+        self.text, self.labels = self.preprocess_dataframe(self.df)
+        self.tokenized_sentences = self.encoding_sentences(self.text)
+        
+    def preprocess_dataframe(self, df):
+        text = list(df["text"])
+        labels = [eval(label) for label in df['label']]
+        labels = self.one_hot_multi_label(labels)
+        return text, labels
+    
+    def one_hot_multi_label(self, labels):
+        one_hot_labels = []
+        for label in labels:
+            one_hot_label = [0 for _ in range(9)]
+            for l in label:
+                one_hot_label[l] = 1
+            one_hot_labels.append(one_hot_label)
+        return one_hot_labels
+    
+    
 class KOLD_Dataset(BASE_Dataset):
     def __init__(self, csv_path, tokenizer_name):
         super(KOLD_Dataset, self).__init__(csv_path, tokenizer_name)
