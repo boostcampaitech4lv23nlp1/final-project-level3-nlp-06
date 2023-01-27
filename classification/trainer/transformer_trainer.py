@@ -1,6 +1,7 @@
 from transformers import TrainingArguments, Trainer, DataCollatorForTokenClassification
 from sklearn.metrics import f1_score, precision_score, recall_score
 import numpy as np
+import torch
 import wandb
 
 
@@ -38,13 +39,29 @@ class HuggingfaceTrainer:
                 compute_metrics=self.compute_metrics
             )
         else:
+            if "multilabel" in self.config["model"]:
+                compute_metrics = self.multi_label_compute_metrics
+            else:
+                compute_metrics = self.calc_f1_score
+                
             self.trainer = Trainer(
                 model=model,
                 args=training_args,
                 train_dataset=train_dataset,
                 eval_dataset=valid_dataset,
-                compute_metrics=self.calc_f1_score
+                compute_metrics=compute_metrics
             )
+            
+    def multi_label_compute_metrics(self, pred):
+        labels = pred.label_ids
+        probs = torch.sigmoid(torch.tensor(pred.predictions))
+        preds = torch.zeros(probs.shape)
+        preds[torch.where(probs >= 0.5)] = 1
+        
+        f1 = f1_score(preds, labels, average="micro")
+        return {
+            "f1 score": f1
+        }
             
     def calc_f1_score(self, p):
         predictions, labels = p
