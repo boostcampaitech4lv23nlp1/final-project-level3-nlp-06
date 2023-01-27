@@ -113,6 +113,14 @@ class kmhas_multilabel_Dataset(BASE_Dataset):
             one_hot_labels.append(one_hot_label)
         return one_hot_labels
     
+    def __getitem__(self, idx):
+        return {
+            "input_ids": self.tokenized_sentences['input_ids'][idx],
+            "token_type_ids": self.tokenized_sentences['token_type_ids'][idx],
+            "attention_mask": self.tokenized_sentences['attention_mask'][idx],
+            "label": self.labels[idx]
+        }
+    
     
 class KOLD_Dataset(BASE_Dataset):
     def __init__(self, csv_path, tokenizer_name):
