@@ -8,9 +8,9 @@ from model import *
 from trainer import *
 
 
-Dataset = {"APEACH": Apeach_Dataset, "BEEP!": Beep_Dataset, "Unsmile": Unsmile_Dataset, 
+Dataset = {"APEACH": Apeach_Dataset, "BEEP!": Beep_Dataset, "Unsmile": Unsmile_Dataset, "k-mhas_multilabel": kmhas_multilabel_Dataset,
            "k-mhas": kmhas_Dataset, "KOLD": KOLD_Dataset, "KOLD_SPAN": Span_Dataset, "KOLD_Sequence_SPAN": Sequence_Span_Dataset}
-models = {"CNN": CNNModel, "VerifiableCNN": VerifiableCNN, "Transformer": transformer, 
+models = {"CNN": CNNModel, "VerifiableCNN": VerifiableCNN, "Transformer": transformer, "multilabelTransformer": multi_label_transformer,
           "SpanTransformer": span_transformer, "TokenSequenceTransformer": Token_Sequence_transformer}
 trainers = {"CNN": CNNTrainer, "VerifiableCNN": CNNTrainer, "Transformer": HuggingfaceTrainer, 
             "SpanTransformer": HuggingfaceTrainer, "TokenSequenceTransformer": TokenSequenceTrainer}
