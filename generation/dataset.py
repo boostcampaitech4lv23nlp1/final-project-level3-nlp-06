@@ -1,6 +1,7 @@
 from torch.utils.data import Dataset
 import pandas as pd
 import torch
+import numpy as np
 
 ### Dataset ###
 class ParallelDatasetForMBart(Dataset):
@@ -112,7 +113,51 @@ def collate_fn(batch):
         attention.append(b["attention_mask"].unsqueeze(0))
         labels.append(b["labels"].unsqueeze(0))
     return {
-        "input_ids":torch.cat(input,0),
-        "attention_mask":torch.cat(attention,0),
-        "labels": torch.cat(labels,0)
-    } # Shape: (batch_size, max length)
+        "input_ids": torch.cat(input, 0),
+        "attention_mask": torch.cat(attention, 0),
+        "labels": torch.cat(labels, 0),
+    }  # Shape: (batch_size, max length)
+
+
+def oneshotrand(config, dataset, tokenizer):
+
+    example_dataset = pd.read_csv(config["train_data_path"])
+    newsource = []
+    prefixsc = "순화된 표현으로 변환: "
+    for i in range(len(dataset)):
+        k = i
+        while k == i:
+            k = np.random.randint(len(example_dataset))
+            if eval:
+                break
+        newsource.append(
+            prefixsc
+            + example_dataset.iloc[k]["source"]
+            + " > "
+            + example_dataset.iloc[k]["target"]
+            + tokenizer.sep_token
+            + dataset.iloc[i]["source"]
+            + " > "
+        )
+    dataset["source"] = newsource
+
+    return dataset
+
+
+def oneshotsim(config, dataset, tokenizer):
+
+    newsource = []
+    prefixsc = "순화된 표현으로 변환: "
+    for i in range(len(dataset)):
+        newsource.append(
+            prefixsc
+            + dataset.iloc[i]["example_source"]
+            + " > "
+            + dataset.iloc[i]["example_target"]
+            + tokenizer.sep_token
+            + dataset.iloc[i]["source"]
+            + " > "
+        )
+    dataset["source"] = newsource
+
+    return dataset
