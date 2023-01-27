@@ -10,17 +10,18 @@ from transformers import (
     MBartForConditionalGeneration,
     is_torch_available,
     T5ForConditionalGeneration,
-    T5Tokenizer
-
+    T5Tokenizer,
 )
+
 sys.path.append("..")
 from tqdm import tqdm
 import wandb
 import yaml
 from reward_util import cal_bl_loss, cal_sc_loss
-from dataset import ParallelDatasetForMBart,ParallelDatasetForT5, collate_fn
+from dataset import ParallelDatasetForMBart, ParallelDatasetForT5, collate_fn
 from classification.model.cnn_model import CNNModel
 import random
+
 
 def set_seed(seed: int = 6):
     random.seed(seed)
@@ -38,7 +39,7 @@ def main(config):
 
     # Load BART
     if config["KcT5"]:
-        model = T5ForConditionalGeneration.from_pretrained("beomi/KcT5-dev",from_flax=True)
+        model = T5ForConditionalGeneration.from_pretrained("beomi/KcT5-dev", from_flax=True)
         if config["model_load"]:
             model.load_state_dict(torch.load(config["model_load_path"]))
         model.to(device)
@@ -49,7 +50,6 @@ def main(config):
             model.load_state_dict(torch.load(config["model_load_path"]))
         model.to(device)
         tokenizer = AutoTokenizer.from_pretrained("facebook/mbart-large-50", src_lang="ko_KR", tgt_lang="ko_KR")
-
 
     # Load style classifier
     sc_tokenizer = AutoTokenizer.from_pretrained(config["model_name"])
@@ -73,12 +73,12 @@ def main(config):
         eval_dataset = ParallelDatasetForMBart(config, tokenizer, eval=True)
 
     train_loader = DataLoader(
-        train_dataset, 
-        collate_fn=collate_fn, 
+        train_dataset,
+        collate_fn=collate_fn,
         shuffle=True,
         batch_size=config["batch_size"],
     )
-    
+
     eval_loader = DataLoader(
         eval_dataset,
         collate_fn=collate_fn,
@@ -104,16 +104,15 @@ def main(config):
                 attention_mask=batch["attention_mask"].to(device),
                 decoder_input_ids=tgt,
             )[0]
-            
+
             shift_logits = logits[..., :-1, :].contiguous()
             shift_labels = tgt[..., 1:].contiguous()
-            loss_ce = loss_fn(shift_logits.view(-1, shift_logits.size(-1)),
-                            shift_labels.view(-1))
+            loss_ce = loss_fn(shift_logits.view(-1, shift_logits.size(-1)), shift_labels.view(-1))
             total_loss_ce.append(loss_ce.item())
 
             # Get additional losses
             loss_sc = torch.tensor(0)
-            idx = tgt.ne(tokenizer.pad_token_id).sum(-1) # Find the end of a sentence
+            idx = tgt.ne(tokenizer.pad_token_id).sum(-1)  # Find the end of a sentence
             loss_sc = cal_sc_loss(device, logits, idx, classifier, tokenizer, sc_tokenizer, 0)
             total_loss_sc.append(loss_sc.item())
             loss_co = torch.tensor(0)
@@ -126,34 +125,37 @@ def main(config):
             loss.backward()
             optimizer.step()
 
-            if i%100 == 0:
-                wandb.log({
-                    "loss": sum(total_loss)/len(total_loss),
-                    "ce_loss":sum(total_loss_ce)/len(total_loss_ce),
-                    "sc_loss":sum(total_loss_sc)/len(total_loss_sc),
-                    "bl_loss":sum(total_loss_co)/len(total_loss_co)
-                })
-                total_loss=[]
-                total_loss_ce=[]
-                total_loss_sc=[]
-                total_loss_co=[]
-        
+            if i % 100 == 0:
+                wandb.log(
+                    {
+                        "loss": sum(total_loss) / len(total_loss),
+                        "ce_loss": sum(total_loss_ce) / len(total_loss_ce),
+                        "sc_loss": sum(total_loss_sc) / len(total_loss_sc),
+                        "bl_loss": sum(total_loss_co) / len(total_loss_co),
+                    }
+                )
+                total_loss = []
+                total_loss_ce = []
+                total_loss_sc = []
+                total_loss_co = []
+
         model.eval()
-        val_loss=[]
-        for i,batch in enumerate(tqdm(eval_loader)):
+        val_loss = []
+        for i, batch in enumerate(tqdm(eval_loader)):
             src = batch["input_ids"].to(device)
             tgt = batch["labels"].to(device)
             with torch.no_grad():
                 logits = model(src, attention_mask=batch["attention_mask"].to(device), decoder_input_ids=tgt)[0]
-            
+
             shift_logits = logits[..., :-1, :].contiguous()
             shift_labels = tgt[..., 1:].contiguous()
-            loss_ce = loss_fn(shift_logits.view(-1, shift_logits.size(-1)),
-                            shift_labels.view(-1))
+            loss_ce = loss_fn(shift_logits.view(-1, shift_logits.size(-1)), shift_labels.view(-1))
             val_loss.append(loss_ce.detach().item())
-            
-        wandb.log({"eval_ce_loss":sum(val_loss)/len(val_loss)})
-        val_loss=[]
+
+        wandb.log({"eval_ce_loss": sum(val_loss) / len(val_loss)})
+        val_loss = []
+        if os.path.isdir(config["result_csv_path"]):
+            checkgeneration(eval_dataset, model, tokenizer, e + 1)
 
     torch.save(model.state_dict(), config["bart_path"])
 
