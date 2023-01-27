@@ -18,6 +18,7 @@ model_load_path: "/opt/ml/final/finalproject/generation/results/thxbart_3_offens
 # Data
 train_data_path: "/opt/ml/dataset/smilestyle_filtered_train.csv"
 eval_data_path: "/opt/ml/dataset/smilestyle_filtered_valid.csv"
+result_csv_path: "/opt/ml/final/finalproject/generation/output/"    #if you want to see generation result by epoch, write the directory of path
 # Hyperparameters
 max_length: 384             # Number of max token when tokenize
 epoch : 3

@@ -1,4 +1,5 @@
 import argparse
+import os
 import sys
 import numpy as np
 import pandas as pd
@@ -32,6 +33,29 @@ def set_seed(seed: int = 6):
         torch.cuda.manual_seed_all(seed)  # if use multi-GPU
         torch.backends.cudnn.deterministic = True
         torch.backends.cudnn.benchmark = False
+
+
+def checkgeneration(eval_dataset, model, tokenizer, epoch):
+    resultdic = {"source": [], "result": []}
+    for i in tqdm(range(32)):
+        source = tokenizer.decode(eval_dataset[i]["input_ids"])
+        summary_ids = model.generate(
+            eval_dataset[i]["input_ids"].unsqueeze(0).to("cuda"),
+            max_length=eval_dataset[i]["input_ids"].size(-1) * 2,
+            early_stopping=True,
+            repetition_penalty=2.0,
+            temperature=0.8,
+            forced_bos_token_id=tokenizer.bos_token_id,
+            eos_token_id=tokenizer.eos_token_id,
+        )
+
+        summ = tokenizer.decode(summary_ids.squeeze().detach().tolist(), skip_special_tokens=False)
+        resultdic["source"].append(source)
+        resultdic["result"].append(summ)
+
+    result = pd.DataFrame(resultdic)
+    result.to_csv(os.path.join(config["result_csv_path"], "result_" + str(epoch) + ".csv"))
+
 
 ### Main ###
 def main(config):
