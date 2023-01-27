@@ -94,7 +94,7 @@ class kmhas_Dataset(BASE_Dataset):
     
 class kmhas_multilabel_Dataset(BASE_Dataset):
     def __init__(self, csv_path, tokenizer_name):
-        super(kmhas_Dataset, self).__init__(csv_path, tokenizer_name)
+        super(kmhas_multilabel_Dataset, self).__init__(csv_path, tokenizer_name)
         self.text, self.labels = self.preprocess_dataframe(self.df)
         self.tokenized_sentences = self.encoding_sentences(self.text)
         
