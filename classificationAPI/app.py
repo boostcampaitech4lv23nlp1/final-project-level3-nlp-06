@@ -2,6 +2,7 @@ import yaml
 import uvicorn
 from fastapi import FastAPI, Request
 from model import ClassificationModel
+from fastapi.middleware.cors import CORSMiddleware
 
 ## Setting Config and Model
 with open("config.yaml") as f:
@@ -10,6 +11,14 @@ model = ClassificationModel(config)
 
 ## Start fastapi server.
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.get("/classification")
 async def classifying(request: Request, comments: str):
