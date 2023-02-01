@@ -27,7 +27,7 @@ app.add_middleware(
 @app.get("/classification")
 async def classifying(request: Request, comments: str):
     while len(models) == 0:
-        time.sleep(0.1)
+        time.sleep(0.0001)
     
     model, index = models.pop()
 
@@ -41,6 +41,6 @@ async def classifying(request: Request, comments: str):
     
     return result
 
-# if __name__=="__main__":
-#     uvicorn.run(app, host="0.0.0.0", port=30001)
+if __name__=="__main__":
+    uvicorn.run(app, host="0.0.0.0", port=8001)
     
