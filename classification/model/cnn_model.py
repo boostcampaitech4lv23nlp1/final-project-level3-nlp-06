@@ -3,7 +3,7 @@ import torch.nn as nn
 
 
 class CNNModel(nn.Module):
-    def __init__(self, vocab_size):
+    def __init__(self, config, vocab_size):
         super(CNNModel, self).__init__()
         
         self.Embedding = nn.Embedding(vocab_size, 128)
