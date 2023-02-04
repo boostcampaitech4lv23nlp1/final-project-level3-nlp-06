@@ -1,50 +1,29 @@
 import torch
 import torch.nn as nn
-from transformers import AutoModel
 
 
 class CNNModel(nn.Module):
-    def __init__(self, config, vocab_size):
+    def __init__(self, vocab_size):
         super(CNNModel, self).__init__()
-        self.config = config
         
-        self.Embedding = nn.Embedding(vocab_size, 768)
-        self.Layer = nn.Sequential(
-            self.conv_block(128, 64), #384
-            self.conv_block(64, 32), # 192
-            self.conv_block(32, 1), # 96
-            nn.Linear(96, 1),
-            nn.Sigmoid()
-        )
-        
-    def conv_block(self, in_channel, out_channel):
-        return nn.Sequential(
-            nn.Conv1d(in_channel, out_channel, kernel_size=3, padding=1),
-            nn.ReLU(),
-            nn.MaxPool1d(kernel_size=2)
-        )
-        
-    def forward(self, inputs, mask):
-        x = self.Embedding(inputs)
-        return self.Layer(x)
-    
+        self.Embedding = nn.Embedding(vocab_size, 128)
+        self.res_block1 = self.ResBlock(128, 128)
+        self.up_conv1 = nn.Conv1d(128, 256, kernel_size=3, padding=1)
+        self.res_block2 = self.ResBlock(256, 256)
+        self.up_conv2 = nn.Conv1d(256, 512, kernel_size=3, padding=1)
+        self.res_block3 = self.ResBlock(512, 512)
 
-class VerifiableCNN(nn.Module):
-    def __init__(self, config, vocab_size):
-        super(VerifiableCNN, self).__init__()
-        
-        self.config = config
-        
-        self.Embedding = nn.Embedding(vocab_size, 768)
-        self.Layer = nn.Sequential(
-            nn.Conv1d(768, 128, kernel_size=3, padding=1),
-            nn.ReLU(),
-            nn.Dropout(0.2),
-            nn.Conv1d(128, 1, kernel_size=3, padding=1),
-            nn.ReLU(),
-            nn.Dropout(0.2),
-        )
+        self.linear = nn.Conv1d(512, 1, kernel_size=1)
         self.sigmoid = nn.Sigmoid()
+        
+    def ResBlock(self, in_dim, out_dim):
+        return nn.Sequential(
+            nn.Conv1d(in_dim, out_dim, kernel_size=3, padding=1),
+            nn.BatchNorm1d(out_dim),
+            nn.ReLU(),
+            nn.Conv1d(out_dim, out_dim, kernel_size=3, padding=1),
+            nn.BatchNorm1d(out_dim),
+        )
     
     def mean_pooling(self, token_embeddings, attention_mask):
         input_mask_expanded = attention_mask.expand(token_embeddings.size()).float()
@@ -53,8 +32,22 @@ class VerifiableCNN(nn.Module):
     def forward(self, inputs, mask):
         x = self.Embedding(inputs)
         x = x.transpose(1, 2)
-        x = self.Layer(x)
+        residual = x
+        x = self.res_block1(x)
+        x += residual
+        x = self.up_conv1(x)
+        
+        residual = x
+        x = self.res_block2(x)
+        x += residual
+        x = self.up_conv2(x)
+        
+        residual = x
+        x = self.res_block3(x)
+        x += residual
+        
+        x = self.linear(x)
         pooled_outputs = self.mean_pooling(x.squeeze(1), mask)
-        pooled_outputs = self.sigmoid(pooled_outputs)
-        return pooled_outputs
+        outputs = self.sigmoid(pooled_outputs)
+        return outputs
         
