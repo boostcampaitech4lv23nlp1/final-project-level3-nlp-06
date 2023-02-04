@@ -68,8 +68,9 @@ def cal_sc_loss(device, logits, end_idx, classifier, tokenizer, sc_tokenizer, st
         padding="max_length",
         truncation=True,
         return_tensors="pt",
-    )["input_ids"].to(device)
-    tgt_cls = classifier(tgt_idx).detach()
+    ).to(device)
+    with torch.no_grad():
+        tgt_cls = classifier(**tgt_idx).logits
 
     if style == 0:
         tgt_reward = torch.ones(tgt_cls.size()).to(device) - tgt_cls * 2
