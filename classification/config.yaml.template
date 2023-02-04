@@ -10,7 +10,7 @@ dataset: dataset 종류 (str) ["APEACH", "BEEP!", "Unsmile", "k-mhas", "KOLD", "
 train_dir: 훈련셋 csv 경로(str)
 valid_dir: 평가셋 csv 경로(str)
 
-model: 모델 유형 ["CNN", "VerifiableCNN", "Transformer", "SpanTransformer", "TokenSequenceTransformer"]
+model: 모델 유형 ["CNN", "Transformer", "SpanTransformer", "TokenSequenceTransformer"]
 
 batch_size: (int)
 epochs: (int)
