@@ -12,6 +12,7 @@ from transformers import (
     is_torch_available,
     T5ForConditionalGeneration,
     T5Tokenizer,
+    AutoModelForSequenceClassification
 )
 
 sys.path.append("..")
@@ -76,10 +77,9 @@ def main(config):
         tokenizer = AutoTokenizer.from_pretrained("facebook/mbart-large-50", src_lang="ko_KR", tgt_lang="ko_KR")
 
     # Load style classifier
-    sc_tokenizer = AutoTokenizer.from_pretrained(config["model_name"])
-    classifier = CNNModel(config, sc_tokenizer.vocab_size)
+    sc_tokenizer = AutoTokenizer.from_pretrained("beomi/KcELECTRA-small-v2022")
+    classifier = AutoModelForSequenceClassification.from_pretrained("happy06/KcELECTRA-small-v2022-SequenceClassification")
     classifier.to(device)
-    classifier.load_state_dict(torch.load(config["classifier_path"]))
     classifier.eval()
 
     wandb.init(
