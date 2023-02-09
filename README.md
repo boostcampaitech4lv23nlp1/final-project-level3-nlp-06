@@ -1,7 +1,5 @@
 # 😁 HAPPY 😁: HAte sPeech Purification for You 
-
-TODO: ADD SIMPLE DEMO PICTURE
-![image](https://user-images.githubusercontent.com/68216991/217414599-1a4bf439-3df6-42de-b86a-3a92487d267f.png)
+![demo_resize_final](https://user-images.githubusercontent.com/105059564/217687894-711d61a0-cab0-4859-a7d6-a35fed25e515.gif)
 
 - 댓글을 작성하면, 분류 모델이 혐오 표현인지를 먼저 판별합니다.
 - 혐오 표현으로 분류될 경우, 토큰 분류 모델을 이용해 문장의 **어느 부분이 혐오 표현인지**를 찾아 알려줍니다.
