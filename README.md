@@ -31,13 +31,14 @@
 ### CLASSIFICATION MODEL
 ![classification_model_architecture](https://user-images.githubusercontent.com/105059564/217680953-813a1b02-c875-4985-bc47-3a0bb70f7311.png)
 
-- Backbone model로는 가장 높은 F1 score를 보이면서도 합리적인 추론 시간을 보인 [🤗 beomi/KcElectra-base-v2022](https://huggingface.co/beomi/KcELECTRA-base-v2022) 모델을 사용했습니다
+- Backbone model로는 가장 높은 F1 score를 보이면서도 합리적인 추론 시간을 보인 [🤗 beomi/KcElectra-base-v2022](https://huggingface.co/beomi/KcELECTRA-base-v2022) 모델을 사용했습니다.
   - F1 score 90.88
   - RPS : 173
 
 ### GENERATION MODEL
 ![generation_model_architecture](https://user-images.githubusercontent.com/105059564/217681048-362aa914-608a-44ec-adb7-5677b29efe1b.png)
 
+- Reward + Prompt model을 최종 채택했습니다.
 
 ## 데이터
 ### CLASSIFICATION MODEL
