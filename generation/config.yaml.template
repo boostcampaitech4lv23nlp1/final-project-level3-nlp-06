@@ -1,24 +1,18 @@
 ### Style Classifier ###
-# Embeddings
-classifier_path: "Model file path to load the style classifier"
-model_name: "Pre-trained model name in Hugging Face to load the embedding weights"
-    # Even if you load the trained style classifier,
-    # you must write the name of used pre-trained model
-    # to construct inputs for the style classifier.
-    # See details in reward_utils.py > cal_sc_loss
-get_bert_embedding: False # True if you load the new embedding weights from the pre-trained model of Hugging Face, False otherwise
 
 ### BART ###
 # Model
 bart_path: "/opt/ml/saved_model/jh_thxbart_3_loss.pt"   # Model path to save the fine-tuned model
 KcT5: True                                              # If you want to use KcT5, True
 #Load
-model_load: True
+model_load: False
 model_load_path: "/opt/ml/final/finalproject/generation/results/thxbart_3_offensive_prompt.pt"
 # Data
 train_data_path: "/opt/ml/dataset/smilestyle_filtered_train.csv"
 eval_data_path: "/opt/ml/dataset/smilestyle_filtered_valid.csv"
+result_csv_path: "/opt/ml/final/finalproject/generation/output/"    #if you want to see generation result by epoch, write the directory of path
 # Hyperparameters
+oneshot: 0                  # 0: no oneshot, 1: random example oneshot, 2: similar example oneshot
 max_length: 384             # Number of max token when tokenize
 epoch : 3
 lr : 1.0e-5

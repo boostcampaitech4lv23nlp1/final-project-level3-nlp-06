@@ -1,5 +1,5 @@
 from transformers import TrainingArguments, Trainer, DataCollatorForTokenClassification
-from sklearn.metrics import f1_score, accuracy_score
+from sklearn.metrics import f1_score, precision_score, recall_score
 import numpy as np
 import wandb
 
@@ -49,9 +49,13 @@ class HuggingfaceTrainer:
     def calc_f1_score(self, p):
         predictions, labels = p
         preds = [1 if pred > 0.5 else 0 for pred in predictions]
-        f1 = f1_score(preds, labels)
+        f1 = f1_score(preds, labels, average="micro")
+        precision = precision_score(preds, labels)
+        recall = recall_score(preds, labels)
         return {
-            "accuracy": f1
+            "f1 score": f1,
+            "precision": precision,
+            "recall": recall
         }
         
     def compute_metrics(self, p):
