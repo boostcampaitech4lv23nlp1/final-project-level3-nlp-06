@@ -1,0 +1,24 @@
+[tool.poetry]
+name = "app-gpu"
+version = "0.1.0"
+description = "gpu"
+authors = ["risolate <rjh4270@naver.com>"]
+readme = "README.md"
+packages = [{include = "app_gpu"}]
+
+[tool.poetry.dependencies]
+python = ">=3.8,<3.10"
+fastapi = "^0.89.1"
+uvicorn = "^0.20.0"
+torch = "^1.13.1"
+transformers = "^4.26.0"
+pydantic = "^1.10.4"
+jax = {extras = ["cpu"], version = "^0.4.2"}
+flax = "^0.6.4"
+bentoml = {extras = ["io-json"], version = "^1.0.13"}
+gunicorn = "^20.1.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
