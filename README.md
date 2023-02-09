@@ -48,7 +48,7 @@
 - 혐오표현을 제거하되 의미를 유지한 문장 재생성 학습을 위해, 직접 혐오 표현 - 순화 표현 parallel dataset(총 3,133개)을 구축했습니다.
 
 ## 추가 정보
-- 발표영상 링크
+- [발표영상 링크](https://www.youtube.com/watch?v=ofmR13g62OY)
 - [발표자료](https://github.com/boostcampaitech4lv23nlp1/final-project-level3-nlp-06/blob/docs-readme/%5B%E1%84%8E%E1%85%AC%E1%84%8C%E1%85%A9%E1%86%BC%5DNLP_6%E1%84%8C%E1%85%A9_%E1%84%8B%E1%85%A1%E1%86%A8%E1%84%91%E1%85%B3%E1%86%AF%20%E1%84%87%E1%85%AE%E1%86%AB%E1%84%85%E1%85%B2%20%E1%84%86%E1%85%B5%E1%86%BE%20%E1%84%89%E1%85%AE%E1%86%AB%E1%84%92%E1%85%AA%20%E1%84%86%E1%85%AE%E1%86%AB%E1%84%8C%E1%85%A1%E1%86%BC%20%E1%84%8C%E1%85%A2%E1%84%89%E1%85%A2%E1%86%BC%E1%84%89%E1%85%A5%E1%86%BC.pdf)
 - [프로젝트 소개 페이지](https://sharp-chemistry-3e6.notion.site/NLP-06-Happy-f2f3a6e1f3ec4a1aba3997ca87786300)
 - 랩업 리포트
