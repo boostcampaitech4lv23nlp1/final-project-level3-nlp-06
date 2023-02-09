@@ -46,7 +46,6 @@
 
 ### GENERATION MODEL : Parallel Dataset 제작
 - 혐오표현을 제거하되 의미를 유지한 문장 재생성 학습을 위해, 직접 혐오 표현 - 순화 표현 parallel dataset(총 3,133개)을 구축했습니다.
-- 구축한 dataset에 대한 보다 자세한 정보는 /data 폴더의 readme 에서 확인하실 수 있습니다
 
 ## 추가 정보
 - 발표영상 링크
