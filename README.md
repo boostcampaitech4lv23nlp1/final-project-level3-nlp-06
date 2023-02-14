@@ -46,7 +46,9 @@
 - 혐오표현 토큰 분류 모델의 학습에는 네이버 뉴스와 유튜브 영상 댓글에서 수집한 한국어 혐오표현 데이터셋인 [KOLD](https://github.com/boychaboy/KOLD)를 사용했습니다.
 
 ### GENERATION MODEL : Parallel Dataset 제작
-- 혐오표현을 제거하되 의미를 유지한 문장 재생성 학습을 위해, 직접 혐오 표현 - 순화 표현 parallel dataset(총 3,133개)을 구축했습니다.
+- 혐오표현을 제거하되 의미를 유지한 문장 재생성 학습을 위해, 직접 사용자의 참여를 받아 혐오 표현 - 순화 표현 parallel dataset(총 3,133개)을 구축했습니다.
+- 혐오표현은 [APEACH](https://github.com/jason9693/APEACH), [BEEP!](https://github.com/kocohub/korean-hate-speech), [K-MHaS](https://github.com/adlnlp/K-MHaS), [KOLD](https://github.com/boychaboy/KOLD) 데이터셋의 혐오표현을 사용했습니다.
+- hate_purificate_parallel_dataset.csv 파일로 사용할 수 있습니다
 
 ## 추가 정보
 - [발표영상 링크](https://www.youtube.com/watch?v=ofmR13g62OY)
